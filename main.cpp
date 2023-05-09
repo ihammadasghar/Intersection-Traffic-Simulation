@@ -1,11 +1,14 @@
-#include "vehicle.h"
-
 #include <QApplication>
+#include "Simulation.h"
 
-int main(int argc, char *argv[])
+Simulation * simulation;
+
+int main(int argc, char **argv)
 {
-    QApplication a(argc, argv);
-    vehicle w;
-    w.show();
-    return a.exec();
+    QApplication app(argc, argv);
+
+    simulation = new Simulation();
+    simulation->show();
+
+    return app.exec();
 }

@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(Intersection-Traffic-Simulation VERSION 0.1 LANGUAGES CXX)
 
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,8 +13,10 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(PROJECT_SOURCES
         main.cpp
         vehicle.cpp
-        vehicle.h
-        vehicle.ui
+        Simulation.cpp
+        Simulation.h
+        Vehicle.h
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -42,14 +42,24 @@ else()
     endif()
 endif()
 
-target_link_libraries(Intersection-Traffic-Simulation PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
 set_target_properties(Intersection-Traffic-Simulation PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+)
+
+target_link_libraries(Intersection-Traffic-Simulation PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+# Resources:
+set(vehicles_resource_files
+    "static/images/backgroundNoLights.png"
+    "static/images/carRed.jpg"
+)
+
+qt_add_resources(Intersection-Traffic-Simulation "vehicles"
+    PREFIX
+        "/"
+    FILES
+        ${vehicles_resource_files}
 )
 
 install(TARGETS Intersection-Traffic-Simulation

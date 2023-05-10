@@ -1,21 +1,16 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-#include <QMainWindow>
+#include <QGraphicsPixmapItem>
+#include <QObject>
+#include <QGraphicsItem>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class vehicle; }
-QT_END_NAMESPACE
-
-class vehicle : public QMainWindow
-{
+class Vehicle: public QObject,public QGraphicsPixmapItem{
     Q_OBJECT
-
 public:
-    vehicle(QWidget *parent = nullptr);
-    ~vehicle();
-
-private:
-    Ui::vehicle *ui;
+    Vehicle(QGraphicsItem * parent=0);
+public slots:
+    void move();
 };
+
 #endif // VEHICLE_H

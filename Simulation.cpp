@@ -21,7 +21,10 @@ Simulation::Simulation(QWidget *parent){
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(ScreenWidth,ScreenHeight);
 
-    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0);
+    QGraphicsRectItem* panel = drawPanel(0, ScreenHeight - (ScreenHeight/4), ScreenWidth, ScreenHeight/4, Qt::green, 0.7);
+    scene->addItem(panel);
+
+    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0, panel);
     int bxPos = this->width()/2 - playButton->boundingRect().width()/2;
     int byPos = 275;
     playButton->setPos(bxPos,byPos);
@@ -36,4 +39,14 @@ void Simulation::start(){
         Vehicle *vehicle = new Vehicle;
         scene->addItem(vehicle);
     }
+}
+
+QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QColor color, double opacity){
+    QGraphicsRectItem* panel = new QGraphicsRectItem(x,y,width,height);
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(color);
+    panel->setBrush(brush);
+    panel->setOpacity(opacity);
+    return panel;
 }

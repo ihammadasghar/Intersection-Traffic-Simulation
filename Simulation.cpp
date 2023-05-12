@@ -3,9 +3,10 @@
 #include <QTimer>
 #include "Simulation.h"
 #include "Vehicle.h"
+#include "Button.h"
 
-static constexpr int ScreenWidth = 680;
-static constexpr int ScreenHeight = 540;
+static constexpr int ScreenWidth = 1024;
+static constexpr int ScreenHeight = 768;
 static constexpr int VehicleCount = 7;
 
 Simulation::Simulation(QWidget *parent){
@@ -20,10 +21,19 @@ Simulation::Simulation(QWidget *parent){
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(ScreenWidth,ScreenHeight);
 
+    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0);
+    int bxPos = this->width()/2 - playButton->boundingRect().width()/2;
+    int byPos = 275;
+    playButton->setPos(bxPos,byPos);
+    connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
+    scene->addItem(playButton);
+
+    show();
+}
+
+void Simulation::start(){
     for (int i = 0; i < VehicleCount; ++i) {
         Vehicle *vehicle = new Vehicle;
         scene->addItem(vehicle);
     }
-
-    show();
 }

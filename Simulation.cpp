@@ -55,6 +55,16 @@ void Simulation::drawGUI(){
     int settingsPanelW = ScreenWidth - (ScreenWidth/5);
     int settingsPanelH = ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4);
     settingsPanel = drawPanel(settingsPanelX, settingsPanelY, settingsPanelW, settingsPanelH, Qt::black, 0.7);
+
+    // Apply Changes Button
+    int applyChangesBtnW = settingsPanelW - (btnPadding*2);
+    int applyChangesBtnH = settingsPanelH/5;
+    int applyChangesBtnX = settingsPanelX + btnPadding;
+    int applyChangesBtnY = settingsPanelY + settingsPanelH - applyChangesBtnH - btnPadding;
+    Button* applyChangesBtn = new Button(QString("Apply Changes"), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, settingsPanel);
+    applyChangesBtn->setPos(applyChangesBtnX, applyChangesBtnY);
+    connect(applyChangesBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
+
     settingsPanel->setVisible(false);
     scene->addItem(settingsPanel);
 

@@ -21,15 +21,7 @@ Simulation::Simulation(QWidget *parent){
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(ScreenWidth,ScreenHeight);
 
-    QGraphicsRectItem* panel = drawPanel(0, ScreenHeight - (ScreenHeight/4), ScreenWidth, ScreenHeight/4, Qt::green, 0.7);
-    scene->addItem(panel);
-
-    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0, panel);
-    int bxPos = this->width()/2 - playButton->boundingRect().width()/2;
-    int byPos = 275;
-    playButton->setPos(bxPos,byPos);
-    connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
-    scene->addItem(playButton);
+    drawGUI();
 
     show();
 }
@@ -39,6 +31,35 @@ void Simulation::start(){
         Vehicle *vehicle = new Vehicle;
         scene->addItem(vehicle);
     }
+}
+
+void Simulation::toggleSettingsPanel(){
+    settingsPanel->setVisible(!settingsPanel->isVisible());
+}
+
+void Simulation::drawGUI(){
+    // Settings panel toggle button
+    Button* settingsButton = new Button(QString("Settings"), Qt::yellow, 50, 50, 0, 0);
+    settingsButton->setPos(ScreenWidth - (ScreenWidth/10), (ScreenHeight/10) - 50);
+    connect(settingsButton,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
+    scene->addItem(settingsButton);
+
+    // settingsPanel panel
+    settingsPanel = drawPanel(ScreenWidth/10, ScreenHeight/10, ScreenWidth - (ScreenWidth/5), ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4), Qt::green, 0.7);
+    settingsPanel->setVisible(false);
+    scene->addItem(settingsPanel);
+
+    // Bottom panel
+    QGraphicsRectItem* panel = drawPanel(0, ScreenHeight - (ScreenHeight/4), ScreenWidth, ScreenHeight/4, Qt::green, 0.7);
+
+    // Start/Stop button in Bottom Panel
+    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0, panel);
+    int bxPos = (ScreenWidth/10);
+    int byPos = ScreenHeight - (ScreenHeight/10) - 100;
+    playButton->setPos(bxPos,byPos);
+    connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
+
+    scene->addItem(panel);
 }
 
 QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QColor color, double opacity){

@@ -11,12 +11,15 @@ public:
     Simulation(QWidget * parent=0);
 
     QGraphicsScene * scene;
+    QGraphicsRectItem* settingsPanel;
 
 public slots:
     void start();
+    void toggleSettingsPanel();
 
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
+    void drawGUI();
 
 };
 

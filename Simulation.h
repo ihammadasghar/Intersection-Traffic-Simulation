@@ -12,10 +12,17 @@ public:
 
     QGraphicsScene * scene;
     QGraphicsRectItem* settingsPanel;
+    bool trafficLightsEnabled;
+    bool soundEffectsEnabled;
+    int unitsOfTime;
+    int speedRangeBottomBound;
+    int speedRangeTopBound;
 
 public slots:
     void start();
     void toggleSettingsPanel();
+    void toggleTrafficLights();
+    void toggleSoundEffects();
 
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);

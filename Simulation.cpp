@@ -22,6 +22,13 @@ Simulation::Simulation(QWidget *parent){
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(ScreenWidth,ScreenHeight);
 
+    // Initial Settings
+    trafficLightsEnabled = false;
+    soundEffectsEnabled = true;
+    unitsOfTime = 60;
+    speedRangeBottomBound = 5;
+    speedRangeTopBound = 10;
+
     drawGUI();
 
     show();
@@ -36,6 +43,14 @@ void Simulation::start(){
 
 void Simulation::toggleSettingsPanel(){
     settingsPanel->setVisible(!settingsPanel->isVisible());
+}
+
+void Simulation::toggleTrafficLights(){
+    trafficLightsEnabled = !trafficLightsEnabled;
+}
+
+void Simulation::toggleSoundEffects(){
+    soundEffectsEnabled = !soundEffectsEnabled;
 }
 
 void Simulation::drawGUI(){
@@ -55,6 +70,28 @@ void Simulation::drawGUI(){
     int settingsPanelW = ScreenWidth - (ScreenWidth/5);
     int settingsPanelH = ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4);
     settingsPanel = drawPanel(settingsPanelX, settingsPanelY, settingsPanelW, settingsPanelH, Qt::black, 0.7);
+
+    // Add settings to panel
+
+    // Traffic Light Toggle
+    QFont f;
+    f.setPointSize(22);
+
+    int settingX = settingsPanelX + btnPadding;
+    int settingY = settingsPanelY + btnPadding;
+    QGraphicsTextItem* trafficLightSetting = new QGraphicsTextItem("-> Traffic Lights", settingsPanel);
+    trafficLightSetting->setPos(settingX, settingY);
+    trafficLightSetting->setFont(f);
+    trafficLightSetting->setDefaultTextColor(Qt::white);
+
+    int trafficLightBtnW = (settingsPanelW/2) - (btnPadding*2);
+    int trafficLightBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int trafficLightBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    int trafficLightBtnY = settingY;
+    Button* trafficLightBtn = new Button(QString(trafficLightsEnabled ? "Turn off" : "Turn On"), Qt::yellow, trafficLightBtnW, trafficLightBtnH, 0, 0, settingsPanel);
+    trafficLightBtn->setPos(trafficLightBtnX, trafficLightBtnY);
+    connect(trafficLightBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
+
 
     // Apply Changes Button
     int applyChangesBtnW = settingsPanelW - (btnPadding*2);

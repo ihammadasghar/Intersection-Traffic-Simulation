@@ -8,6 +8,7 @@
 static constexpr int ScreenWidth = 1024;
 static constexpr int ScreenHeight = 768;
 static constexpr int VehicleCount = 7;
+static constexpr int btnPadding = 10;
 
 Simulation::Simulation(QWidget *parent){
     // create the scene
@@ -39,27 +40,41 @@ void Simulation::toggleSettingsPanel(){
 
 void Simulation::drawGUI(){
     // Settings panel toggle button
-    Button* settingsButton = new Button(QString("Settings"), Qt::yellow, 50, 50, 0, 0);
-    settingsButton->setPos(ScreenWidth - (ScreenWidth/10), (ScreenHeight/10) - 50);
-    connect(settingsButton,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
-    scene->addItem(settingsButton);
+    int settingsBtnW = 50;
+    int settingsBtnH = 50;
+    int settingsBtnX = ScreenWidth - (ScreenWidth/10);
+    int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
+    Button* settingsBtn = new Button(QString("Settings"), Qt::yellow, settingsBtnW, settingsBtnH, 0, 0);
+    settingsBtn->setPos(settingsBtnX, settingsBtnY);
+    connect(settingsBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
+    scene->addItem(settingsBtn);
 
     // settingsPanel panel
-    settingsPanel = drawPanel(ScreenWidth/10, ScreenHeight/10, ScreenWidth - (ScreenWidth/5), ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4), Qt::green, 0.7);
+    int settingsPanelX = ScreenWidth/10;
+    int settingsPanelY = ScreenHeight/10;
+    int settingsPanelW = ScreenWidth - (ScreenWidth/5);
+    int settingsPanelH = ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4);
+    settingsPanel = drawPanel(settingsPanelX, settingsPanelY, settingsPanelW, settingsPanelH, Qt::black, 0.7);
     settingsPanel->setVisible(false);
     scene->addItem(settingsPanel);
 
     // Bottom panel
-    QGraphicsRectItem* panel = drawPanel(0, ScreenHeight - (ScreenHeight/4), ScreenWidth, ScreenHeight/4, Qt::green, 0.7);
+    int bottomPanelX = 0;
+    int bottomPanelY = ScreenHeight - (ScreenHeight/4);
+    int bottomPanelW = ScreenWidth;
+    int bottomPanelH = ScreenHeight/4;
+    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::black, 0.7);
 
     // Start/Stop button in Bottom Panel
-    Button* playButton = new Button(QString("Play"), Qt::blue, 200, 100, 0, 0, panel);
-    int bxPos = (ScreenWidth/10);
-    int byPos = ScreenHeight - (ScreenHeight/10) - 100;
-    playButton->setPos(bxPos,byPos);
+    int playBtnX = bottomPanelX + btnPadding;
+    int playBtnY = bottomPanelY + btnPadding;
+    int playBtnW = (bottomPanelW/4) + (btnPadding*2);
+    int playBtnH = bottomPanelH - (btnPadding*2);
+    Button* playButton = new Button(QString("Play"), Qt::yellow, playBtnW, playBtnH, 0, 0, bottomPanel);
+    playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
-    scene->addItem(panel);
+    scene->addItem(bottomPanel);
 }
 
 QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QColor color, double opacity){

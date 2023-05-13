@@ -92,6 +92,21 @@ void Simulation::drawGUI(){
     trafficLightBtn->setPos(trafficLightBtnX, trafficLightBtnY);
     connect(trafficLightBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
 
+    // Sound Effects Setting
+    settingY += settingsPanelH/5;
+    QGraphicsTextItem* soundEffectsSetting = new QGraphicsTextItem("-> Sound Effects", settingsPanel);
+    soundEffectsSetting->setPos(settingX, settingY);
+    soundEffectsSetting->setFont(f);
+    soundEffectsSetting->setDefaultTextColor(Qt::white);
+
+    int soundEffectsBtnW = (settingsPanelW/2) - (btnPadding*2);
+    int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int soundEffectsBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    int soundEffectsBtnY = settingY;
+    Button* soundEffectsBtn = new Button(QString(soundEffectsEnabled ? "Turn off" : "Turn On"), Qt::yellow, soundEffectsBtnW, soundEffectsBtnH, 0, 0, settingsPanel);
+    soundEffectsBtn->setPos(soundEffectsBtnX, soundEffectsBtnY);
+    connect(soundEffectsBtn,SIGNAL(clicked()),this,SLOT(toggleSoundEffects()));
+
 
     // Apply Changes Button
     int applyChangesBtnW = settingsPanelW - (btnPadding*2);

@@ -48,12 +48,12 @@ void Simulation::toggleSettingsPanel(){
 
 void Simulation::toggleTrafficLights(){
     trafficLightsEnabled = !trafficLightsEnabled;
-    trafficLightSetting->setPlainText(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "Off" : "On"));
+    trafficLightSetting->setPlainText(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
 }
 
 void Simulation::toggleSoundEffects(){
     soundEffectsEnabled = !soundEffectsEnabled;
-    soundEffectsSetting->setPlainText(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "Off" : "On"));
+    soundEffectsSetting->setPlainText(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
 }
 
 void Simulation::incrementUnitsOfTime(){
@@ -84,7 +84,7 @@ void Simulation::incrementSpeedRangeUpperBound(){
 }
 
 void Simulation::decrementSpeedRangeUpperBound(){
-    // Can go lower than lower bound
+    // Cant go lower than lower bound
     if(speedRangeLowerBound <= speedRangeUpperBound-1){
         speedRangeUpperBound--;
         speedRangeSetting->setPlainText(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
@@ -117,7 +117,7 @@ void Simulation::drawGUI(){
 
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
-    trafficLightSetting = new QGraphicsTextItem(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "Off" : "On"), settingsPanel);
+    trafficLightSetting = new QGraphicsTextItem(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
     trafficLightSetting->setPos(settingX, settingY);
     trafficLightSetting->setFont(f);
     trafficLightSetting->setDefaultTextColor(Qt::white);
@@ -132,7 +132,7 @@ void Simulation::drawGUI(){
 
     // Sound Effects Setting
     settingY += settingsPanelH/5;
-    soundEffectsSetting = new QGraphicsTextItem(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "Off" : "On"), settingsPanel);
+    soundEffectsSetting = new QGraphicsTextItem(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
     soundEffectsSetting->setPos(settingX, settingY);
     soundEffectsSetting->setFont(f);
     soundEffectsSetting->setDefaultTextColor(Qt::white);

@@ -6,8 +6,8 @@
 #include "Button.h"
 #include "string"
 
-static constexpr int ScreenWidth = 1024;
-static constexpr int ScreenHeight = 768;
+static constexpr int ScreenWidth = 680;
+static constexpr int ScreenHeight = 715;
 static constexpr int VehicleCount = 7;
 static constexpr int btnPadding = 10;
 
@@ -97,7 +97,7 @@ void Simulation::drawGUI(){
     int settingsBtnH = 50;
     int settingsBtnX = ScreenWidth - (ScreenWidth/10);
     int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH, 0, 0);
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::lightGray, settingsBtnW, settingsBtnH, 0, 0);
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
     connect(settingsBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
     scene->addItem(settingsBtn);
@@ -113,7 +113,7 @@ void Simulation::drawGUI(){
 
     // Traffic Light Toggle
     QFont f;
-    f.setPointSize(22);
+    f.setPointSize(15);
 
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
@@ -224,7 +224,7 @@ void Simulation::drawGUI(){
     int bottomPanelY = ScreenHeight - (ScreenHeight/4);
     int bottomPanelW = ScreenWidth;
     int bottomPanelH = ScreenHeight/4;
-    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::black, 0.7);
+    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 0.99);
 
     // Start/Stop button in Bottom Panel
     int playBtnX = bottomPanelX + btnPadding;

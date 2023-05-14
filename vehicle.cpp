@@ -10,7 +10,6 @@ extern Simulation * simulation;
 Vehicle::Vehicle(QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
     int random_number = rand() % 600;
     setPos(random_number,0);
-
     setPixmap(QPixmap(":static/images/carRed.jpg"));
     setTransformOriginPoint(50,50);
     setRotation(180);
@@ -24,11 +23,34 @@ Vehicle::Vehicle(QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
 
 void Vehicle::move(){
     // move
-    setPos(x(),y()+5);
 
-    // destroy vehicle when it goes out of the screen
-    if (pos().y() > 600){
+    //setPos(x()+5,y());
+    //setPos(x()-5,y());
+    setPos(x(),y()+5);
+    //setPos(x(),y()-5);
+
+    // destroy vehicle when it hits the bottom border
+    if (pos().y() > 435){
+        scene()->removeItem(this);
+        delete this;
+    }
+
+    // destroy vehicle when it hits the top border
+    else if (pos().y() < -100){
+        scene()->removeItem(this);
+        delete this;
+    }
+
+    // destroy vehicle when it hits the left border
+    else if (pos().x() < -100){
+        scene()->removeItem(this);
+        delete this;
+    }
+
+    // destroy vehicle when it hits the right border
+    else if (pos().x() > 750){
         scene()->removeItem(this);
         delete this;
     }
 }
+

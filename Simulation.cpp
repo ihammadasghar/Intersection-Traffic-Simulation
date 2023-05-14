@@ -126,7 +126,7 @@ void Simulation::drawGUI(){
     int trafficLightBtnH = (settingsPanelH/5) - (btnPadding*2);
     int trafficLightBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int trafficLightBtnY = settingY;
-    Button* trafficLightBtn = new Button(QString("Toggle"), Qt::yellow, trafficLightBtnW, trafficLightBtnH, 0, 0, settingsPanel);
+    Button* trafficLightBtn = new Button(QString("Toggle"), Qt::green, trafficLightBtnW, trafficLightBtnH, 0, 0, settingsPanel);
     trafficLightBtn->setPos(trafficLightBtnX, trafficLightBtnY);
     connect(trafficLightBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
 
@@ -141,7 +141,7 @@ void Simulation::drawGUI(){
     int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
     int soundEffectsBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int soundEffectsBtnY = settingY;
-    Button* soundEffectsBtn = new Button(QString("Toggle"), Qt::yellow, soundEffectsBtnW, soundEffectsBtnH, 0, 0, settingsPanel);
+    Button* soundEffectsBtn = new Button(QString("Toggle"), Qt::green, soundEffectsBtnW, soundEffectsBtnH, 0, 0, settingsPanel);
     soundEffectsBtn->setPos(soundEffectsBtnX, soundEffectsBtnY);
     connect(soundEffectsBtn,SIGNAL(clicked()),this,SLOT(toggleSoundEffects()));
 
@@ -156,7 +156,7 @@ void Simulation::drawGUI(){
     int unitsOfTimeIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int unitsOfTimeIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int unitsOfTimeIncBtnY = settingY;
-    Button* unitsOfTimeIncBtn = new Button(QString("+"), Qt::yellow, unitsOfTimeIncBtnW, unitsOfTimeIncBtnH, 0, 0, settingsPanel);
+    Button* unitsOfTimeIncBtn = new Button(QString("+"), Qt::green, unitsOfTimeIncBtnW, unitsOfTimeIncBtnH, 0, 0, settingsPanel);
     unitsOfTimeIncBtn->setPos(unitsOfTimeIncBtnX, unitsOfTimeIncBtnY);
     connect(unitsOfTimeIncBtn,SIGNAL(clicked()),this,SLOT(incrementUnitsOfTime()));
 
@@ -164,7 +164,7 @@ void Simulation::drawGUI(){
     int unitsOfTimeDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int unitsOfTimeDecBtnX = unitsOfTimeIncBtnX + unitsOfTimeIncBtnW;
     int unitsOfTimeDecBtnY = unitsOfTimeIncBtnY;
-    Button* unitsOfTimeDecBtn = new Button(QString("-"), Qt::yellow, unitsOfTimeDecBtnW, unitsOfTimeDecBtnH, 0, 0, settingsPanel);
+    Button* unitsOfTimeDecBtn = new Button(QString("-"), Qt::red, unitsOfTimeDecBtnW, unitsOfTimeDecBtnH, 0, 0, settingsPanel);
     unitsOfTimeDecBtn->setPos(unitsOfTimeDecBtnX, unitsOfTimeDecBtnY);
     connect(unitsOfTimeDecBtn,SIGNAL(clicked()),this,SLOT(decrementUnitsOfTime()));
 
@@ -179,7 +179,7 @@ void Simulation::drawGUI(){
     int speedRangeLowerBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int speedRangeLowerBoundIncBtnY = settingY;
-    Button* speedRangeLowerBoundIncBtn = new Button(QString("+"), Qt::yellow, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundIncBtn->setPos(speedRangeLowerBoundIncBtnX, speedRangeLowerBoundIncBtnY);
     connect(speedRangeLowerBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeLowerBound()));
 
@@ -187,7 +187,7 @@ void Simulation::drawGUI(){
     int speedRangeLowerBoundDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + speedRangeLowerBoundIncBtnW;
     int speedRangeLowerBoundDecBtnY = settingY;
-    Button* speedRangeLowerBoundDecBtn = new Button(QString("-"), Qt::yellow, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundDecBtn = new Button(QString("-"), Qt::red, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundDecBtn->setPos(speedRangeLowerBoundDecBtnX, speedRangeLowerBoundDecBtnY);
     connect(speedRangeLowerBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeLowerBound()));
 
@@ -195,7 +195,7 @@ void Simulation::drawGUI(){
     int speedRangeUpperBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeUpperBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*2);
     int speedRangeUpperBoundIncBtnY = settingY;
-    Button* speedRangeUpperBoundIncBtn = new Button(QString("+"), Qt::yellow, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeUpperBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeUpperBoundIncBtn->setPos(speedRangeUpperBoundIncBtnX, speedRangeUpperBoundIncBtnY);
     connect(speedRangeUpperBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeUpperBound()));
 
@@ -203,7 +203,7 @@ void Simulation::drawGUI(){
     int speedRangeUpperBoundDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeUpperBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*3);
     int speedRangeUpperBoundDecBtnY = settingY;
-    Button* speedRangeUpperBoundDecBtn = new Button(QString("-"), Qt::yellow, speedRangeUpperBoundDecBtnW, speedRangeUpperBoundDecBtnH, 0, 0, settingsPanel);
+    Button* speedRangeUpperBoundDecBtn = new Button(QString("-"), Qt::red, speedRangeUpperBoundDecBtnW, speedRangeUpperBoundDecBtnH, 0, 0, settingsPanel);
     speedRangeUpperBoundDecBtn->setPos(speedRangeUpperBoundDecBtnX, speedRangeUpperBoundDecBtnY);
     connect(speedRangeUpperBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeUpperBound()));
 

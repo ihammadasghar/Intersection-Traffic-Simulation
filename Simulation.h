@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QWidget>
 #include <QGraphicsScene>
+#include <QGraphicsTextItem>
 
 class Simulation: public QGraphicsView{
     Q_OBJECT
@@ -15,14 +16,24 @@ public:
     bool trafficLightsEnabled;
     bool soundEffectsEnabled;
     int unitsOfTime;
-    int speedRangeBottomBound;
-    int speedRangeTopBound;
+    int speedRangeLowerBound;
+    int speedRangeUpperBound;
+    QGraphicsTextItem* unitsOfTimeSetting;
+    QGraphicsTextItem* soundEffectsSetting;
+    QGraphicsTextItem* trafficLightSetting;
+    QGraphicsTextItem* speedRangeSetting;
 
 public slots:
     void start();
     void toggleSettingsPanel();
     void toggleTrafficLights();
     void toggleSoundEffects();
+    void incrementUnitsOfTime();
+    void decrementUnitsOfTime();
+    void incrementSpeedRangeLowerBound();
+    void decrementSpeedRangeLowerBound();
+    void incrementSpeedRangeUpperBound();
+    void decrementSpeedRangeUpperBound();
 
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);

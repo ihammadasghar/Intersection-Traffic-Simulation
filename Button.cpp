@@ -1,6 +1,7 @@
 #include "Button.h"
 #include <QGraphicsTextItem>
 #include <QBrush>
+#include <QFont>
 
 Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x, qreal y, QGraphicsItem *parent): QGraphicsRectItem(parent){
     color = bgColor;
@@ -14,10 +15,14 @@ Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x,
     setBrush(brush);
 
     // draw the text
+    QFont f;
+    f.setPointSize(22);
+
     text = new QGraphicsTextItem(name,this);
-    int xPos = rect().width()/2 - text->boundingRect().width()/2;
-    int yPos = rect().height()/2 - text->boundingRect().height()/2;
+    int xPos = ((rect().width() - text->boundingRect().width())/2)-(22/2);
+    int yPos = ((rect().height() - text->boundingRect().height())/2)-(22/2);
     text->setPos(xPos,yPos);
+    text->setFont(f);
     text->setDefaultTextColor(Qt::white);
 
     // allow responding to hover events

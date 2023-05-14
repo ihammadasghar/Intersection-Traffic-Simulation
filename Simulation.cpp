@@ -97,7 +97,7 @@ void Simulation::drawGUI(){
     int settingsBtnH = 50;
     int settingsBtnX = ScreenWidth - (ScreenWidth/10);
     int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("Settings"), Qt::yellow, settingsBtnW, settingsBtnH, 0, 0);
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH, 0, 0);
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
     connect(settingsBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
     scene->addItem(settingsBtn);
@@ -126,7 +126,7 @@ void Simulation::drawGUI(){
     int trafficLightBtnH = (settingsPanelH/5) - (btnPadding*2);
     int trafficLightBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int trafficLightBtnY = settingY;
-    Button* trafficLightBtn = new Button(QString("Toggle"), Qt::green, trafficLightBtnW, trafficLightBtnH, 0, 0, settingsPanel);
+    Button* trafficLightBtn = new Button(QString("O/I"), Qt::green, trafficLightBtnW, trafficLightBtnH, 0, 0, settingsPanel);
     trafficLightBtn->setPos(trafficLightBtnX, trafficLightBtnY);
     connect(trafficLightBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
 
@@ -141,7 +141,7 @@ void Simulation::drawGUI(){
     int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
     int soundEffectsBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int soundEffectsBtnY = settingY;
-    Button* soundEffectsBtn = new Button(QString("Toggle"), Qt::green, soundEffectsBtnW, soundEffectsBtnH, 0, 0, settingsPanel);
+    Button* soundEffectsBtn = new Button(QString("O/I"), Qt::green, soundEffectsBtnW, soundEffectsBtnH, 0, 0, settingsPanel);
     soundEffectsBtn->setPos(soundEffectsBtnX, soundEffectsBtnY);
     connect(soundEffectsBtn,SIGNAL(clicked()),this,SLOT(toggleSoundEffects()));
 

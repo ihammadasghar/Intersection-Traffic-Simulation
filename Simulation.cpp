@@ -139,6 +139,7 @@ void Simulation::drawGUI(){
 
     // Sound Effects Setting
     settingY += settingsPanelH/5;
+
     soundEffectsSetting = new QGraphicsTextItem(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
     soundEffectsSetting->setPos(settingX, settingY);
     soundEffectsSetting->setFont(f);
@@ -155,6 +156,7 @@ void Simulation::drawGUI(){
 
     // Units of Time setting
     settingY += settingsPanelH/5;
+
     unitsOfTimeSetting = new QGraphicsTextItem(QString("Units Of Time: ") + QString::number(unitsOfTime), settingsPanel);
     unitsOfTimeSetting->setPos(settingX, settingY);
     unitsOfTimeSetting->setFont(f);
@@ -179,6 +181,7 @@ void Simulation::drawGUI(){
     // Speed Range setting
     settingY += settingsPanelH/5;
     speedRangeSetting = new QGraphicsTextItem(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), settingsPanel);
+
     speedRangeSetting->setPos(settingX, settingY);
     speedRangeSetting->setFont(f);
     speedRangeSetting->setDefaultTextColor(Qt::white);

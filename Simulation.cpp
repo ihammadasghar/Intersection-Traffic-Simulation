@@ -59,6 +59,10 @@ void Simulation::start(){
 }
 
 void Simulation::addVehicle(){
+    totalCarsSpawned++;
+    carsOnScreen++;
+    totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));
+    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
     Vehicle *vehicle = new Vehicle;
     scene->addItem(vehicle);
 }
@@ -291,17 +295,17 @@ void Simulation::drawStatistics(){
     statisticsPanel->setZValue(2);
 
     int statisticsTextSize = 4;
-    QGraphicsTextItem* statisticsTextsItems[statisticsTextSize] = {collisonsDisplay, collisonsAvoidedDisplay, carsOnScreenDisplay, totalCarsSpawnedDisplay};
+
+    QGraphicsTextItem** statisticsTextsItems[4] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
     QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Cars On Screen: ", "Total Cars Spawned: "};
     int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
 
     for(int i=0; i<statisticsTextSize; i++){
-        statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
-        statisticsTextsItems[i]->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
-        statisticsTextsItems[i]->setFont(f);
-        statisticsTextsItems[i]->setDefaultTextColor(Qt::white);
+        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
+        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
+        (*statisticsTextsItems[i])->setFont(f);
+        (*statisticsTextsItems[i])->setDefaultTextColor(Qt::white);
     }
-
 
     scene->addItem(statisticsPanel);
 }

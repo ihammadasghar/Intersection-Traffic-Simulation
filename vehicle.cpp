@@ -51,26 +51,28 @@ void Vehicle::move(){
 
     // destroy vehicle when it hits the bottom border
     if (pos().y() > 500){
-        scene()->removeItem(this);
-        delete this;
+        selfDestruct();
     }
 
     // destroy vehicle when it hits the top border
     else if (pos().y() < -100){
-        scene()->removeItem(this);
-        delete this;
+        selfDestruct();
     }
 
     // destroy vehicle when it hits the left border
     else if (pos().x() < -100){
-        scene()->removeItem(this);
-        delete this;
+        selfDestruct();
     }
 
     // destroy vehicle when it hits the right border
     else if (pos().x() > 750){
-        scene()->removeItem(this);
-        delete this;
+        selfDestruct();
     }
 }
 
+void Vehicle::selfDestruct(){
+    simulation->carsOnScreen--;
+    simulation->carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(simulation->carsOnScreen));
+    scene()->removeItem(this);
+    delete this;
+}

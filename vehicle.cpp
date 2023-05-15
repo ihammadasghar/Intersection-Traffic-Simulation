@@ -4,33 +4,53 @@
 #include <QList>
 #include <stdlib.h>
 #include "Simulation.h"
+#include <string>
+#include <cmath>
+#include <iostream>
 
 extern Simulation * simulation;
 
 Vehicle::Vehicle(QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
-    int random_number = rand() % 600;
-    setPos(random_number,0);
-    setPixmap(QPixmap(":static/images/carRed.jpg"));
-    setTransformOriginPoint(50,50);
-    setRotation(180);
+    int random_number = 400;
+
+
+    int pickedCar = (rand() % 5) - 1;
+    QString carTypes[5] = {"Red", "Green", "Yellow", "Taxi", "Orange"};
+    QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
+
+    x = 1;
+    y = 200;
+    setPos((int)x, (int)y);
+    setPixmap(QPixmap(filePath));
+    setTransformOriginPoint(0,0);
+
+    pps = ((rand() % (simulation->speedRangeUpperBound)) + (simulation->speedRangeLowerBound))/30; // Pixels Per Sec
 
     QTimer * timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
 
-    // start the timer
-    timer->start(50);
+    // start the timer 33 msec for 30 FPS
+    timer->start(33);
 }
 
 void Vehicle::move(){
     // move
+    float p1 = 400;
+    float a = 5000;
+    float h = 3.5;
+    float slope = (a/pow((x)+(2*h)-p1, 2));
+    float angle = atan(slope);
+    int rot = angle*180/3.1415;
+    setRotation(rot);
 
-    //setPos(x()+5,y());
-    //setPos(x()-5,y());
-    setPos(x(),y()+5);
-    //setPos(x(),y()-5);
+    float changeInX = pps*cos(angle);
+    float changeInY = pps*sin(angle);
+    x += changeInX;
+    y += changeInY;
+    setPos((int)x, (int)y);
 
     // destroy vehicle when it hits the bottom border
-    if (pos().y() > 435){
+    if (pos().y() > 500){
         scene()->removeItem(this);
         delete this;
     }

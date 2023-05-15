@@ -8,8 +8,11 @@
 
 static constexpr int ScreenWidth = 680;
 static constexpr int ScreenHeight = 715;
-static constexpr int VehicleCount = 7;
+static constexpr int VehicleCount = 1;
 static constexpr int btnPadding = 10;
+static constexpr int initialSpeedRangeLowerBound = 80;
+static constexpr int initialSpeedRangeUpperBound = 100;
+static constexpr int vehiclesPerSec = 3;
 
 Simulation::Simulation(QWidget *parent){
     // create the scene
@@ -27,8 +30,8 @@ Simulation::Simulation(QWidget *parent){
     trafficLightsEnabled = false;
     soundEffectsEnabled = true;
     unitsOfTime = 60;
-    speedRangeLowerBound = 5;
-    speedRangeUpperBound = 10;
+    speedRangeLowerBound = initialSpeedRangeLowerBound;
+    speedRangeUpperBound = initialSpeedRangeUpperBound;
 
     drawGUI();
 
@@ -36,10 +39,14 @@ Simulation::Simulation(QWidget *parent){
 }
 
 void Simulation::start(){
-    for (int i = 0; i < VehicleCount; ++i) {
-        Vehicle *vehicle = new Vehicle;
-        scene->addItem(vehicle);
-    }
+    QTimer * timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
+    timer->start(1000/vehiclesPerSec);
+}
+
+void Simulation::addVehicle(){
+    Vehicle *vehicle = new Vehicle;
+    scene->addItem(vehicle);
 }
 
 void Simulation::toggleSettingsPanel(){

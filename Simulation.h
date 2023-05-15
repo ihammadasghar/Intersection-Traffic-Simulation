@@ -25,6 +25,7 @@ public:
 
 public slots:
     void start();
+    void addVehicle();
     void toggleSettingsPanel();
     void toggleTrafficLights();
     void toggleSoundEffects();

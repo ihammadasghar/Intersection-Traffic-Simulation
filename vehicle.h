@@ -9,6 +9,9 @@ class Vehicle: public QObject,public QGraphicsPixmapItem{
     Q_OBJECT
 public:
     Vehicle(QGraphicsItem * parent=0);
+    float pps;
+    float x;
+    float y;
 public slots:
     void move();
 };

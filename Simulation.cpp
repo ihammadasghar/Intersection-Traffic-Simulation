@@ -49,11 +49,13 @@ void Simulation::toggleSettingsPanel(){
 void Simulation::toggleTrafficLights(){
     trafficLightsEnabled = !trafficLightsEnabled;
     trafficLightSetting->setPlainText(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
+    trafficLightDisplay->setPlainText(trafficLightSetting->toPlainText());
 }
 
 void Simulation::toggleSoundEffects(){
     soundEffectsEnabled = !soundEffectsEnabled;
     soundEffectsSetting->setPlainText(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
+    soundEffectsDisplay->setPlainText(soundEffectsSetting->toPlainText());
 }
 
 void Simulation::incrementUnitsOfTime(){
@@ -109,18 +111,53 @@ void Simulation::drawGUI(){
     int settingsPanelH = ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4);
     settingsPanel = drawPanel(settingsPanelX, settingsPanelY, settingsPanelW, settingsPanelH, Qt::black, 0.7);
 
+    // Statistics panel
+    int statisticsPanelX = 168;
+    int statisticsPanelY = ScreenHeight - (ScreenHeight/4) +10;
+    int statisticsPanelW = ScreenWidth - 180;
+    int statisticsPanelH = (ScreenHeight)/3 -80;
+    QGraphicsRectItem* statisticsPanel = drawPanel(statisticsPanelX, statisticsPanelY, statisticsPanelW, statisticsPanelH, Qt::lightGray, 0.7);
+
     // Add settings to panel
 
-    // Traffic Light Toggle
-    QFont f;
+       QFont f;
     f.setPointSize(15);
-
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
+
+    // Collisons
+    collisonsDisplay = new QGraphicsTextItem(QString("-> Collisons: ") + QString("0"), statisticsPanel);
+    collisonsDisplay->setPos(statisticsPanelX +5, statisticsPanelY +4);
+    collisonsDisplay->setFont(f);
+    collisonsDisplay->setDefaultTextColor(Qt::white);
+
+    // Collisons Avoided
+    collisonsAvoidedDisplay = new QGraphicsTextItem(QString("-> Collisons Avoided: ") + QString("0"), statisticsPanel);
+    collisonsAvoidedDisplay->setPos(statisticsPanelX +5, statisticsPanelY +40);
+    collisonsAvoidedDisplay->setFont(f);
+    collisonsAvoidedDisplay->setDefaultTextColor(Qt::white);
+
+    // Total Cars Generated
+    totalCarsDisplay = new QGraphicsTextItem(QString("-> Total Cars Generated: ") + QString("0"), statisticsPanel);
+    totalCarsDisplay->setPos(statisticsPanelX +5, statisticsPanelY +80);
+    totalCarsDisplay->setFont(f);
+    totalCarsDisplay->setDefaultTextColor(Qt::white);
+
+    // Cars on screen
+    carsOnScreenDisplay = new QGraphicsTextItem(QString("-> Cars On Screen: ") + QString("0"), statisticsPanel);
+    carsOnScreenDisplay->setPos(statisticsPanelX +5, statisticsPanelY +120);
+    carsOnScreenDisplay->setFont(f);
+    carsOnScreenDisplay->setDefaultTextColor(Qt::white);
+
+    // Traffic Light Toggle
     trafficLightSetting = new QGraphicsTextItem(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
     trafficLightSetting->setPos(settingX, settingY);
     trafficLightSetting->setFont(f);
     trafficLightSetting->setDefaultTextColor(Qt::white);
+    trafficLightDisplay = new QGraphicsTextItem(QString(trafficLightSetting->toPlainText()), statisticsPanel);
+    trafficLightDisplay->setPos(statisticsPanelX +278, statisticsPanelY +4);
+    trafficLightDisplay->setFont(f);
+    trafficLightDisplay->setDefaultTextColor(Qt::white);
 
     int trafficLightBtnW = (settingsPanelW/2) - (btnPadding*2);
     int trafficLightBtnH = (settingsPanelH/5) - (btnPadding*2);
@@ -136,6 +173,10 @@ void Simulation::drawGUI(){
     soundEffectsSetting->setPos(settingX, settingY);
     soundEffectsSetting->setFont(f);
     soundEffectsSetting->setDefaultTextColor(Qt::white);
+    soundEffectsDisplay = new QGraphicsTextItem(QString(soundEffectsSetting->toPlainText()), statisticsPanel);
+    soundEffectsDisplay->setPos(statisticsPanelX +278, statisticsPanelY +40);
+    soundEffectsDisplay->setFont(f);
+    soundEffectsDisplay->setDefaultTextColor(Qt::white);
 
     int soundEffectsBtnW = (settingsPanelW/2) - (btnPadding*2);
     int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
@@ -151,12 +192,16 @@ void Simulation::drawGUI(){
     unitsOfTimeSetting->setPos(settingX, settingY);
     unitsOfTimeSetting->setFont(f);
     unitsOfTimeSetting->setDefaultTextColor(Qt::white);
+    unitsOfTimeDisplay = new QGraphicsTextItem(QString(unitsOfTimeSetting->toPlainText()), statisticsPanel);
+    unitsOfTimeDisplay->setPos(statisticsPanelX +278, statisticsPanelY +80);
+    unitsOfTimeDisplay->setFont(f);
+    unitsOfTimeDisplay->setDefaultTextColor(Qt::white);
 
     int unitsOfTimeIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/2;
     int unitsOfTimeIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int unitsOfTimeIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int unitsOfTimeIncBtnY = settingY;
-    Button* unitsOfTimeIncBtn = new Button(QString("+"), Qt::green, unitsOfTimeIncBtnW, unitsOfTimeIncBtnH, 0, 0, settingsPanel);
+    Button* unitsOfTimeIncBtn = new Button(QString(" +"), Qt::green, unitsOfTimeIncBtnW, unitsOfTimeIncBtnH, 0, 0, settingsPanel);
     unitsOfTimeIncBtn->setPos(unitsOfTimeIncBtnX, unitsOfTimeIncBtnY);
     connect(unitsOfTimeIncBtn,SIGNAL(clicked()),this,SLOT(incrementUnitsOfTime()));
 
@@ -164,7 +209,7 @@ void Simulation::drawGUI(){
     int unitsOfTimeDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int unitsOfTimeDecBtnX = unitsOfTimeIncBtnX + unitsOfTimeIncBtnW;
     int unitsOfTimeDecBtnY = unitsOfTimeIncBtnY;
-    Button* unitsOfTimeDecBtn = new Button(QString("-"), Qt::red, unitsOfTimeDecBtnW, unitsOfTimeDecBtnH, 0, 0, settingsPanel);
+    Button* unitsOfTimeDecBtn = new Button(QString(" -"), Qt::red, unitsOfTimeDecBtnW, unitsOfTimeDecBtnH, 0, 0, settingsPanel);
     unitsOfTimeDecBtn->setPos(unitsOfTimeDecBtnX, unitsOfTimeDecBtnY);
     connect(unitsOfTimeDecBtn,SIGNAL(clicked()),this,SLOT(decrementUnitsOfTime()));
 
@@ -174,12 +219,16 @@ void Simulation::drawGUI(){
     speedRangeSetting->setPos(settingX, settingY);
     speedRangeSetting->setFont(f);
     speedRangeSetting->setDefaultTextColor(Qt::white);
+    speedRangeDisplay = new QGraphicsTextItem(QString(speedRangeSetting->toPlainText()), statisticsPanel);
+    speedRangeDisplay->setPos(statisticsPanelX +278, statisticsPanelY +120);
+    speedRangeDisplay->setFont(f);
+    speedRangeDisplay->setDefaultTextColor(Qt::white);
 
     int speedRangeLowerBoundIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/4;
     int speedRangeLowerBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int speedRangeLowerBoundIncBtnY = settingY;
-    Button* speedRangeLowerBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundIncBtn = new Button(QString(" +"), Qt::green, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundIncBtn->setPos(speedRangeLowerBoundIncBtnX, speedRangeLowerBoundIncBtnY);
     connect(speedRangeLowerBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeLowerBound()));
 
@@ -187,7 +236,7 @@ void Simulation::drawGUI(){
     int speedRangeLowerBoundDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + speedRangeLowerBoundIncBtnW;
     int speedRangeLowerBoundDecBtnY = settingY;
-    Button* speedRangeLowerBoundDecBtn = new Button(QString("-"), Qt::red, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundDecBtn = new Button(QString(" -"), Qt::red, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundDecBtn->setPos(speedRangeLowerBoundDecBtnX, speedRangeLowerBoundDecBtnY);
     connect(speedRangeLowerBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeLowerBound()));
 
@@ -195,7 +244,7 @@ void Simulation::drawGUI(){
     int speedRangeUpperBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeUpperBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*2);
     int speedRangeUpperBoundIncBtnY = settingY;
-    Button* speedRangeUpperBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeUpperBoundIncBtn = new Button(QString(" +"), Qt::green, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeUpperBoundIncBtn->setPos(speedRangeUpperBoundIncBtnX, speedRangeUpperBoundIncBtnY);
     connect(speedRangeUpperBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeUpperBound()));
 
@@ -203,7 +252,7 @@ void Simulation::drawGUI(){
     int speedRangeUpperBoundDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeUpperBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*3);
     int speedRangeUpperBoundDecBtnY = settingY;
-    Button* speedRangeUpperBoundDecBtn = new Button(QString("-"), Qt::red, speedRangeUpperBoundDecBtnW, speedRangeUpperBoundDecBtnH, 0, 0, settingsPanel);
+    Button* speedRangeUpperBoundDecBtn = new Button(QString(" -"), Qt::red, speedRangeUpperBoundDecBtnW, speedRangeUpperBoundDecBtnH, 0, 0, settingsPanel);
     speedRangeUpperBoundDecBtn->setPos(speedRangeUpperBoundDecBtnX, speedRangeUpperBoundDecBtnY);
     connect(speedRangeUpperBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeUpperBound()));
 
@@ -212,7 +261,7 @@ void Simulation::drawGUI(){
     int applyChangesBtnH = settingsPanelH/5;
     int applyChangesBtnX = settingsPanelX + btnPadding;
     int applyChangesBtnY = settingsPanelY + settingsPanelH - applyChangesBtnH - btnPadding;
-    Button* applyChangesBtn = new Button(QString("Apply Changes"), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, settingsPanel);
+    Button* applyChangesBtn = new Button(QString("Apply Changes                             "), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, settingsPanel);
     applyChangesBtn->setPos(applyChangesBtnX, applyChangesBtnY);
     connect(applyChangesBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
 
@@ -224,18 +273,20 @@ void Simulation::drawGUI(){
     int bottomPanelY = ScreenHeight - (ScreenHeight/4);
     int bottomPanelW = ScreenWidth;
     int bottomPanelH = ScreenHeight/4;
-    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 0.99);
+    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
 
     // Start/Stop button in Bottom Panel
-    int playBtnX = bottomPanelX + btnPadding;
-    int playBtnY = bottomPanelY + btnPadding;
-    int playBtnW = (bottomPanelW/4) + (btnPadding*2);
-    int playBtnH = bottomPanelH - (btnPadding*2);
-    Button* playButton = new Button(QString("Play"), Qt::yellow, playBtnW, playBtnH, 0, 0, bottomPanel);
+    int playBtnX = bottomPanelX+10 + btnPadding;
+    int playBtnY = bottomPanelY+40 + btnPadding;
+    int playBtnW = (bottomPanelW/6) + (btnPadding*2);
+    int playBtnH = (bottomPanelH/2) - (btnPadding*2);
+    Button* playButton = new Button(QString("Start  "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
     scene->addItem(bottomPanel);
+    scene->addItem(statisticsPanel);
+
 }
 
 QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QColor color, double opacity){

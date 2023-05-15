@@ -16,7 +16,7 @@ Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x,
 
     // draw the text
     QFont f;
-    f.setPointSize(15);
+    f.setPointSize(22);
 
     text = new QGraphicsTextItem(name,this);
     int xPos = ((rect().width() - text->boundingRect().width())/2)-(22/2);

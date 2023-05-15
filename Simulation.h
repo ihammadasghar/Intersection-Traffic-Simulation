@@ -23,6 +23,16 @@ public:
     QGraphicsTextItem* trafficLightSetting;
     QGraphicsTextItem* speedRangeSetting;
 
+    QGraphicsTextItem* unitsOfTimeDisplay;
+    QGraphicsTextItem* soundEffectsDisplay;
+    QGraphicsTextItem* trafficLightDisplay;
+    QGraphicsTextItem* speedRangeDisplay;
+
+    QGraphicsTextItem* collisonsDisplay;
+    QGraphicsTextItem* collisonsAvoidedDisplay;
+    QGraphicsTextItem* totalCarsDisplay;
+    QGraphicsTextItem* carsOnScreenDisplay;
+
 public slots:
     void start();
     void toggleSettingsPanel();

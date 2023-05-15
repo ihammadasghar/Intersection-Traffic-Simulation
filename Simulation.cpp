@@ -30,12 +30,17 @@ Simulation::Simulation(QWidget *parent){
     trafficLightsEnabled = false;
     soundEffectsEnabled = true;
     unitsOfTime = 60;
+    collisons = 0;
+    collisonsAvoided=0;
+    carsOnScreen =0;
+    totalCarsSpawned=0;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
     speedRangeUpperBound = initialSpeedRangeUpperBound;
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
 
     drawGUI();
+    drawStatistics();
 
     show();
 }
@@ -47,7 +52,7 @@ void Simulation::start(){
         playButton->setColor(Qt::red);
         timer->start(1000/vehiclesPerSec);
     }else{
-        playButton->setText("Play");
+        playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
         timer->stop();
     }
@@ -64,46 +69,47 @@ void Simulation::toggleSettingsPanel(){
 
 void Simulation::toggleTrafficLights(){
     trafficLightsEnabled = !trafficLightsEnabled;
-    trafficLightSetting->setPlainText(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
+    trafficLightSetting->setPlainText(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
 }
 
 void Simulation::toggleSoundEffects(){
     soundEffectsEnabled = !soundEffectsEnabled;
-    soundEffectsSetting->setPlainText(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
+    soundEffectsSetting->setPlainText(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
 }
 
 void Simulation::incrementUnitsOfTime(){
     unitsOfTime++;
-    unitsOfTimeSetting->setPlainText(QString("-> Units Of Time: ") + QString::number(unitsOfTime));
+    unitsOfTimeSetting->setPlainText(QString("Units Of Time: ") + QString::number(unitsOfTime));
 }
+
 void Simulation::decrementUnitsOfTime(){
     unitsOfTime--;
-    unitsOfTimeSetting->setPlainText(QString("-> Units Of Time: ") + QString::number(unitsOfTime));
+    unitsOfTimeSetting->setPlainText(QString("Units Of Time: ") + QString::number(unitsOfTime));
 }
 
 void Simulation::incrementSpeedRangeLowerBound(){
     // Can go higher than Upper bound
     if(speedRangeUpperBound >= speedRangeLowerBound+1){
         speedRangeLowerBound++;
-        speedRangeSetting->setPlainText(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
     }
 }
 
 void Simulation::decrementSpeedRangeLowerBound(){
     speedRangeLowerBound--;
-    speedRangeSetting->setPlainText(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
 }
 
 void Simulation::incrementSpeedRangeUpperBound(){
     speedRangeUpperBound++;
-    speedRangeSetting->setPlainText(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
 }
 
 void Simulation::decrementSpeedRangeUpperBound(){
     // Cant go lower than lower bound
     if(speedRangeLowerBound <= speedRangeUpperBound-1){
         speedRangeUpperBound--;
-        speedRangeSetting->setPlainText(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
     }
 }
 
@@ -113,7 +119,7 @@ void Simulation::drawGUI(){
     int settingsBtnH = 50;
     int settingsBtnX = ScreenWidth - (ScreenWidth/10);
     int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("⚙️"), Qt::lightGray, settingsBtnW, settingsBtnH, 0, 0);
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH,0, 0);
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
     connect(settingsBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
     scene->addItem(settingsBtn);
@@ -124,16 +130,17 @@ void Simulation::drawGUI(){
     int settingsPanelW = ScreenWidth - (ScreenWidth/5);
     int settingsPanelH = ScreenHeight - (ScreenHeight/5) - (ScreenHeight/4);
     settingsPanel = drawPanel(settingsPanelX, settingsPanelY, settingsPanelW, settingsPanelH, Qt::black, 0.7);
+    settingsPanel->setZValue(2);
 
     // Add settings to panel
-
-    // Traffic Light Toggle
     QFont f;
-    f.setPointSize(15);
+    f.setPointSize(20);
 
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
-    trafficLightSetting = new QGraphicsTextItem(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
+
+    // Traffic Light Toggle
+    trafficLightSetting = new QGraphicsTextItem(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
     trafficLightSetting->setPos(settingX, settingY);
     trafficLightSetting->setFont(f);
     trafficLightSetting->setDefaultTextColor(Qt::white);
@@ -148,10 +155,12 @@ void Simulation::drawGUI(){
 
     // Sound Effects Setting
     settingY += settingsPanelH/5;
-    soundEffectsSetting = new QGraphicsTextItem(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
+
+    soundEffectsSetting = new QGraphicsTextItem(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
     soundEffectsSetting->setPos(settingX, settingY);
     soundEffectsSetting->setFont(f);
     soundEffectsSetting->setDefaultTextColor(Qt::white);
+
 
     int soundEffectsBtnW = (settingsPanelW/2) - (btnPadding*2);
     int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
@@ -163,7 +172,8 @@ void Simulation::drawGUI(){
 
     // Units of Time setting
     settingY += settingsPanelH/5;
-    unitsOfTimeSetting = new QGraphicsTextItem(QString("-> Units Of Time: ") + QString::number(unitsOfTime), settingsPanel);
+
+    unitsOfTimeSetting = new QGraphicsTextItem(QString("Units Of Time: ") + QString::number(unitsOfTime), settingsPanel);
     unitsOfTimeSetting->setPos(settingX, settingY);
     unitsOfTimeSetting->setFont(f);
     unitsOfTimeSetting->setDefaultTextColor(Qt::white);
@@ -186,7 +196,8 @@ void Simulation::drawGUI(){
 
     // Speed Range setting
     settingY += settingsPanelH/5;
-    speedRangeSetting = new QGraphicsTextItem(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), settingsPanel);
+    speedRangeSetting = new QGraphicsTextItem(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), settingsPanel);
+
     speedRangeSetting->setPos(settingX, settingY);
     speedRangeSetting->setFont(f);
     speedRangeSetting->setDefaultTextColor(Qt::white);
@@ -211,7 +222,7 @@ void Simulation::drawGUI(){
     int speedRangeUpperBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeUpperBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*2);
     int speedRangeUpperBoundIncBtnY = settingY;
-    Button* speedRangeUpperBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeUpperBoundIncBtn = new Button(QString(" +"), Qt::green, speedRangeUpperBoundIncBtnW, speedRangeUpperBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeUpperBoundIncBtn->setPos(speedRangeUpperBoundIncBtnX, speedRangeUpperBoundIncBtnY);
     connect(speedRangeUpperBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeUpperBound()));
 
@@ -224,11 +235,11 @@ void Simulation::drawGUI(){
     connect(speedRangeUpperBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeUpperBound()));
 
     // Apply Changes Button
-    int applyChangesBtnW = settingsPanelW - (btnPadding*2);
+    int applyChangesBtnW = settingsPanelW - (settingsPanelW/2);
     int applyChangesBtnH = settingsPanelH/5;
-    int applyChangesBtnX = settingsPanelX + btnPadding;
+    int applyChangesBtnX = settingsPanelX + (settingsPanelW/4);
     int applyChangesBtnY = settingsPanelY + settingsPanelH - applyChangesBtnH - btnPadding;
-    Button* applyChangesBtn = new Button(QString("Apply Changes"), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, settingsPanel);
+    Button* applyChangesBtn = new Button(QString("Apply"), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, settingsPanel);
     applyChangesBtn->setPos(applyChangesBtnX, applyChangesBtnY);
     connect(applyChangesBtn,SIGNAL(clicked()),this,SLOT(toggleSettingsPanel()));
 
@@ -240,18 +251,20 @@ void Simulation::drawGUI(){
     int bottomPanelY = ScreenHeight - (ScreenHeight/4);
     int bottomPanelW = ScreenWidth;
     int bottomPanelH = ScreenHeight/4;
-    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 0.99);
+    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
+    bottomPanel->setZValue(1);
 
     // Start/Stop button in Bottom Panel
-    int playBtnX = bottomPanelX + btnPadding;
-    int playBtnY = bottomPanelY + btnPadding;
-    int playBtnW = (bottomPanelW/4) + (btnPadding*2);
-    int playBtnH = bottomPanelH - (btnPadding*2);
-    playButton = new Button(QString("Play"), Qt::yellow, playBtnW, playBtnH, 0, 0, bottomPanel);
+    int playBtnX = bottomPanelX + bottomPanelW/30;
+    int playBtnY = ScreenHeight -(bottomPanelH/2);
+    int playBtnW = (bottomPanelW/6) + (btnPadding*2);
+    int playBtnH = (bottomPanelH/2) - (btnPadding*2);
+    playButton = new Button(QString("Start "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
     scene->addItem(bottomPanel);
+
 }
 
 QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QColor color, double opacity){
@@ -262,4 +275,33 @@ QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QC
     panel->setBrush(brush);
     panel->setOpacity(opacity);
     return panel;
+}
+
+void Simulation::drawStatistics(){
+
+    QFont f;
+    f.setPointSize(20);
+
+    // Statistics panel
+    int statisticsPanelX = 168;
+    int statisticsPanelY = ScreenHeight - (ScreenHeight/4) +10;
+    int statisticsPanelW = ScreenWidth - 180;
+    int statisticsPanelH = (ScreenHeight)/3 -80;
+    QGraphicsRectItem* statisticsPanel = drawPanel(statisticsPanelX, statisticsPanelY, statisticsPanelW, statisticsPanelH, Qt::lightGray, 0.7);
+    statisticsPanel->setZValue(2);
+
+    int statisticsTextSize = 4;
+    QGraphicsTextItem* statisticsTextsItems[statisticsTextSize] = {collisonsDisplay, collisonsAvoidedDisplay, carsOnScreenDisplay, totalCarsSpawnedDisplay};
+    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Cars On Screen: ", "Total Cars Spawned: "};
+    int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
+
+    for(int i=0; i<statisticsTextSize; i++){
+        statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
+        statisticsTextsItems[i]->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
+        statisticsTextsItems[i]->setFont(f);
+        statisticsTextsItems[i]->setDefaultTextColor(Qt::white);
+    }
+
+
+    scene->addItem(statisticsPanel);
 }

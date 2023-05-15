@@ -50,3 +50,17 @@ void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
     brush.setColor(color);
     setBrush(brush);
 }
+
+void Button::setText(QString txt){
+    text->setPlainText(txt);
+}
+
+void Button::setColor(QColor bgColor){
+    color = bgColor;
+    color.setAlphaF(0.7);
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(color);
+    setBrush(brush);
+    brush.setColor(color);
+}

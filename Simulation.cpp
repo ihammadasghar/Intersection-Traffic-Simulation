@@ -3,7 +3,6 @@
 #include <QTimer>
 #include "Simulation.h"
 #include "Vehicle.h"
-#include "Button.h"
 #include "string"
 
 static constexpr int ScreenWidth = 680;
@@ -12,7 +11,7 @@ static constexpr int VehicleCount = 1;
 static constexpr int btnPadding = 10;
 static constexpr int initialSpeedRangeLowerBound = 80;
 static constexpr int initialSpeedRangeUpperBound = 100;
-static constexpr int vehiclesPerSec = 3;
+static constexpr int vehiclesPerSec = 1;
 
 Simulation::Simulation(QWidget *parent){
     // create the scene
@@ -27,11 +26,14 @@ Simulation::Simulation(QWidget *parent){
     setFixedSize(ScreenWidth,ScreenHeight);
 
     // Initial Settings
+    simulationStarted = false;
     trafficLightsEnabled = false;
     soundEffectsEnabled = true;
     unitsOfTime = 60;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
     speedRangeUpperBound = initialSpeedRangeUpperBound;
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
 
     drawGUI();
 
@@ -39,9 +41,16 @@ Simulation::Simulation(QWidget *parent){
 }
 
 void Simulation::start(){
-    QTimer * timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
-    timer->start(1000/vehiclesPerSec);
+    simulationStarted = !simulationStarted;
+    if(simulationStarted){
+        playButton->setText("Stop");
+        playButton->setColor(Qt::red);
+        timer->start(1000/vehiclesPerSec);
+    }else{
+        playButton->setText("Play");
+        playButton->setColor(Qt::darkGreen);
+        timer->stop();
+    }
 }
 
 void Simulation::addVehicle(){
@@ -238,7 +247,7 @@ void Simulation::drawGUI(){
     int playBtnY = bottomPanelY + btnPadding;
     int playBtnW = (bottomPanelW/4) + (btnPadding*2);
     int playBtnH = bottomPanelH - (btnPadding*2);
-    Button* playButton = new Button(QString("Play"), Qt::yellow, playBtnW, playBtnH, 0, 0, bottomPanel);
+    playButton = new Button(QString("Play"), Qt::yellow, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 

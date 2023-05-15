@@ -190,7 +190,7 @@ void Simulation::drawGUI(){
     int speedRangeLowerBoundIncBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
     int speedRangeLowerBoundIncBtnY = settingY;
-    Button* speedRangeLowerBoundIncBtn = new Button(QString(" +"), Qt::green, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundIncBtn = new Button(QString("+"), Qt::green, speedRangeLowerBoundIncBtnW, speedRangeLowerBoundIncBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundIncBtn->setPos(speedRangeLowerBoundIncBtnX, speedRangeLowerBoundIncBtnY);
     connect(speedRangeLowerBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeLowerBound()));
 
@@ -198,7 +198,7 @@ void Simulation::drawGUI(){
     int speedRangeLowerBoundDecBtnH = (settingsPanelH/5) - (btnPadding*2);
     int speedRangeLowerBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + speedRangeLowerBoundIncBtnW;
     int speedRangeLowerBoundDecBtnY = settingY;
-    Button* speedRangeLowerBoundDecBtn = new Button(QString(" -"), Qt::red, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
+    Button* speedRangeLowerBoundDecBtn = new Button(QString("-"), Qt::red, speedRangeLowerBoundDecBtnW, speedRangeLowerBoundDecBtnH, 0, 0, settingsPanel);
     speedRangeLowerBoundDecBtn->setPos(speedRangeLowerBoundDecBtnX, speedRangeLowerBoundDecBtnY);
     connect(speedRangeLowerBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeLowerBound()));
 

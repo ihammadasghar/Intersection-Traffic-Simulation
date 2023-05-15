@@ -30,7 +30,7 @@ void Vehicle::move(){
     //setPos(x(),y()-5);
 
     // destroy vehicle when it hits the bottom border
-    if (pos().y() > 435){
+    if (pos().y() > 500){
         scene()->removeItem(this);
         delete this;
     }

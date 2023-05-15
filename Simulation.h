@@ -18,19 +18,20 @@ public:
     int unitsOfTime;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
+
+    int collisons;
+    int collisonsAvoided;
+    int totalCarsSpawned;
+    int carsOnScreen;
+
     QGraphicsTextItem* unitsOfTimeSetting;
     QGraphicsTextItem* soundEffectsSetting;
     QGraphicsTextItem* trafficLightSetting;
     QGraphicsTextItem* speedRangeSetting;
 
-    QGraphicsTextItem* unitsOfTimeDisplay;
-    QGraphicsTextItem* soundEffectsDisplay;
-    QGraphicsTextItem* trafficLightDisplay;
-    QGraphicsTextItem* speedRangeDisplay;
-
     QGraphicsTextItem* collisonsDisplay;
     QGraphicsTextItem* collisonsAvoidedDisplay;
-    QGraphicsTextItem* totalCarsDisplay;
+    QGraphicsTextItem* totalCarsSpawnedDisplay;
     QGraphicsTextItem* carsOnScreenDisplay;
 
 public slots:
@@ -44,7 +45,7 @@ public slots:
     void decrementSpeedRangeLowerBound();
     void incrementSpeedRangeUpperBound();
     void decrementSpeedRangeUpperBound();
-
+    void drawStatistics();
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void drawGUI();

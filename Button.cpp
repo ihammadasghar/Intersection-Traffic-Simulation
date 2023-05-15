@@ -19,8 +19,8 @@ Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x,
     f.setPointSize(22);
 
     text = new QGraphicsTextItem(name,this);
-    int xPos = ((rect().width() - text->boundingRect().width())/2)-(22/2);
-    int yPos = ((rect().height() - text->boundingRect().height())/2)-(22/2);
+    int xPos = ((width - text->boundingRect().width())/2)-(22/2);
+    int yPos = ((height - text->boundingRect().height())/2)-(22/2);
     text->setPos(xPos,yPos);
     text->setFont(f);
     text->setDefaultTextColor(Qt::white);

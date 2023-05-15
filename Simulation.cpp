@@ -120,37 +120,37 @@ void Simulation::drawGUI(){
 
     // Add settings to panel
 
-       QFont f;
+    QFont f;
     f.setPointSize(15);
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
 
     // Collisons
-    collisonsDisplay = new QGraphicsTextItem(QString("-> Collisons: ") + QString("0"), statisticsPanel);
+    collisonsDisplay = new QGraphicsTextItem(QString(" Collisons: ") + QString("0"), statisticsPanel);
     collisonsDisplay->setPos(statisticsPanelX +5, statisticsPanelY +4);
     collisonsDisplay->setFont(f);
     collisonsDisplay->setDefaultTextColor(Qt::white);
 
     // Collisons Avoided
-    collisonsAvoidedDisplay = new QGraphicsTextItem(QString("-> Collisons Avoided: ") + QString("0"), statisticsPanel);
+    collisonsAvoidedDisplay = new QGraphicsTextItem(QString(" Collisons Avoided: ") + QString("0"), statisticsPanel);
     collisonsAvoidedDisplay->setPos(statisticsPanelX +5, statisticsPanelY +40);
     collisonsAvoidedDisplay->setFont(f);
     collisonsAvoidedDisplay->setDefaultTextColor(Qt::white);
 
     // Total Cars Generated
-    totalCarsDisplay = new QGraphicsTextItem(QString("-> Total Cars Generated: ") + QString("0"), statisticsPanel);
+    totalCarsDisplay = new QGraphicsTextItem(QString(" Total Cars Generated: ") + QString("0"), statisticsPanel);
     totalCarsDisplay->setPos(statisticsPanelX +5, statisticsPanelY +80);
     totalCarsDisplay->setFont(f);
     totalCarsDisplay->setDefaultTextColor(Qt::white);
 
     // Cars on screen
-    carsOnScreenDisplay = new QGraphicsTextItem(QString("-> Cars On Screen: ") + QString("0"), statisticsPanel);
+    carsOnScreenDisplay = new QGraphicsTextItem(QString(" Cars On Screen: ") + QString("0"), statisticsPanel);
     carsOnScreenDisplay->setPos(statisticsPanelX +5, statisticsPanelY +120);
     carsOnScreenDisplay->setFont(f);
     carsOnScreenDisplay->setDefaultTextColor(Qt::white);
 
     // Traffic Light Toggle
-    trafficLightSetting = new QGraphicsTextItem(QString("-> Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
+    trafficLightSetting = new QGraphicsTextItem(QString(" Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), settingsPanel);
     trafficLightSetting->setPos(settingX, settingY);
     trafficLightSetting->setFont(f);
     trafficLightSetting->setDefaultTextColor(Qt::white);
@@ -169,7 +169,7 @@ void Simulation::drawGUI(){
 
     // Sound Effects Setting
     settingY += settingsPanelH/5;
-    soundEffectsSetting = new QGraphicsTextItem(QString("-> Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
+    soundEffectsSetting = new QGraphicsTextItem(QString("vSound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), settingsPanel);
     soundEffectsSetting->setPos(settingX, settingY);
     soundEffectsSetting->setFont(f);
     soundEffectsSetting->setDefaultTextColor(Qt::white);
@@ -188,7 +188,7 @@ void Simulation::drawGUI(){
 
     // Units of Time setting
     settingY += settingsPanelH/5;
-    unitsOfTimeSetting = new QGraphicsTextItem(QString("-> Units Of Time: ") + QString::number(unitsOfTime), settingsPanel);
+    unitsOfTimeSetting = new QGraphicsTextItem(QString(" Units Of Time: ") + QString::number(unitsOfTime), settingsPanel);
     unitsOfTimeSetting->setPos(settingX, settingY);
     unitsOfTimeSetting->setFont(f);
     unitsOfTimeSetting->setDefaultTextColor(Qt::white);
@@ -215,7 +215,7 @@ void Simulation::drawGUI(){
 
     // Speed Range setting
     settingY += settingsPanelH/5;
-    speedRangeSetting = new QGraphicsTextItem(QString("-> Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), settingsPanel);
+    speedRangeSetting = new QGraphicsTextItem(QString(" Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), settingsPanel);
     speedRangeSetting->setPos(settingX, settingY);
     speedRangeSetting->setFont(f);
     speedRangeSetting->setDefaultTextColor(Qt::white);

@@ -1,6 +1,6 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
-
+#include "Button.h"
 #include <QGraphicsView>
 #include <QWidget>
 #include <QGraphicsScene>
@@ -13,6 +13,8 @@ public:
 
     QGraphicsScene * scene;
     QGraphicsRectItem* settingsPanel;
+    QTimer* timer;
+    bool simulationStarted;
     bool trafficLightsEnabled;
     bool soundEffectsEnabled;
     int unitsOfTime;
@@ -28,6 +30,7 @@ public:
     QGraphicsTextItem* soundEffectsSetting;
     QGraphicsTextItem* trafficLightSetting;
     QGraphicsTextItem* speedRangeSetting;
+    Button* playButton;
 
     QGraphicsTextItem* collisonsDisplay;
     QGraphicsTextItem* collisonsAvoidedDisplay;
@@ -36,6 +39,7 @@ public:
 
 public slots:
     void start();
+    void addVehicle();
     void toggleSettingsPanel();
     void toggleTrafficLights();
     void toggleSoundEffects();

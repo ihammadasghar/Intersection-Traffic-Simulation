@@ -54,7 +54,11 @@ target_link_libraries(Intersection-Traffic-Simulation PRIVATE Qt${QT_VERSION_MAJ
 # Resources:
 set(vehicles_resource_files
     "static/images/backgroundNoLights.png"
-    "static/images/carRed.jpg"
+    "static/images/carRed.png"
+    "static/images/carGreen.png"
+    "static/images/carOrange.png"
+    "static/images/carYellow.png"
+    "static/images/carTaxi.png"
 )
 
 qt_add_resources(Intersection-Traffic-Simulation "vehicles"

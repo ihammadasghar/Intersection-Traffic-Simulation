@@ -48,7 +48,6 @@ public slots:
     void decrementSpeedRangeUpperBound();
     void drawStatistics();
     void drawTrafficLights();
-    //void drawTrafficLights();
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void drawGUI();

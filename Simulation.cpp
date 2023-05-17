@@ -313,12 +313,7 @@ void Simulation::drawTrafficLights(){
     trafficLightsList[i]->setOpacity(1);
     trafficLightsList[i]->setEnabled(false);
 }
-    /*
-    trafficLightsList[0]->setPos(ScreenWidth/3.5, ScreenWidth/5.3);
-    trafficLightsList[1]->setPos(ScreenWidth/1.5, ScreenWidth/5.5);
-    trafficLightsList[2]->setPos(ScreenWidth/1.5, ScreenWidth/1.7);
-    trafficLightsList[3]->setPos(ScreenWidth/3.5, ScreenWidth/1.8);
-    */
+
     //Green lights
     trafficLightsList[0]->setPos(ScreenWidth -(ScreenWidth- ScreenWidth/3.55), ScreenWidth/6);
     trafficLightsList[2]->setPos(ScreenWidth/1.55, ScreenWidth/1.65);

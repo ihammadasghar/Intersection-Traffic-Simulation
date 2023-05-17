@@ -73,8 +73,8 @@ void Simulation::drawGUI(){
 
     int settingsBtnW = 50;
     int settingsBtnH = 50;
-    int settingsBtnX = ScreenWidth - (ScreenWidth/10);
-    int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
+    int settingsBtnX = screenWidth - (screenWidth/10);
+    int settingsBtnY = (screenHeight/10) - settingsBtnH;
     Button* settingsBtn = new Button(QString("⚙️"), Qt::blue, settingsBtnW, settingsBtnH,0, 0);
 
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
@@ -83,9 +83,9 @@ void Simulation::drawGUI(){
 
     // Bottom panel
     int bottomPanelX = 0;
-    int bottomPanelY = ScreenHeight - (ScreenHeight/4);
-    int bottomPanelW = ScreenWidth;
-    int bottomPanelH = ScreenHeight/4;
+    int bottomPanelY = screenHeight - (screenHeight/4);
+    int bottomPanelW = screenWidth;
+    int bottomPanelH = screenHeight/4;
     bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
 
     bottomPanel->setZValue(1);
@@ -140,11 +140,11 @@ void Simulation::drawTrafficLights(){
 }
 
     //Green lights
-    trafficLightsList[0]->setPos(ScreenWidth -(ScreenWidth- ScreenWidth/3.55), ScreenWidth/6);
-    trafficLightsList[2]->setPos(ScreenWidth/1.55, ScreenWidth/1.65);
+    trafficLightsList[0]->setPos(screenWidth -(screenWidth- screenWidth/3.55), screenWidth/6);
+    trafficLightsList[2]->setPos(screenWidth/1.55, screenWidth/1.65);
 
     //Red lights
-    trafficLightsList[1]->setPos(ScreenWidth - ScreenWidth/3.2, ScreenWidth/4.8);
-    trafficLightsList[3]->setPos(ScreenWidth/4, ScreenWidth/1.8);
+    trafficLightsList[1]->setPos(screenWidth - screenWidth/3.2, screenWidth/4.8);
+    trafficLightsList[3]->setPos(screenWidth/4, screenWidth/1.8);
 }
 

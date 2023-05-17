@@ -3,13 +3,15 @@
 #include <QTimer>
 #include "Simulation.h"
 #include "Vehicle.h"
-#include "Button.h"
 #include "string"
 
 static constexpr int ScreenWidth = 680;
 static constexpr int ScreenHeight = 715;
-static constexpr int VehicleCount = 7;
+static constexpr int VehicleCount = 1;
 static constexpr int btnPadding = 10;
+static constexpr int initialSpeedRangeLowerBound = 80;
+static constexpr int initialSpeedRangeUpperBound = 100;
+static constexpr int vehiclesPerSec = 1;
 
 Simulation::Simulation(QWidget *parent){
     // create the scene
@@ -24,15 +26,18 @@ Simulation::Simulation(QWidget *parent){
     setFixedSize(ScreenWidth,ScreenHeight);
 
     // Initial Settings
+    simulationStarted = false;
     trafficLightsEnabled = false;
     soundEffectsEnabled = true;
     unitsOfTime = 60;
-    speedRangeLowerBound = 5;
-    speedRangeUpperBound = 10;
     collisons = 0;
     collisonsAvoided=0;
     carsOnScreen =0;
     totalCarsSpawned=0;
+    speedRangeLowerBound = initialSpeedRangeLowerBound;
+    speedRangeUpperBound = initialSpeedRangeUpperBound;
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
 
     drawGUI();
     drawStatistics();
@@ -42,10 +47,25 @@ Simulation::Simulation(QWidget *parent){
 }
 
 void Simulation::start(){
-    for (int i = 0; i < VehicleCount; ++i) {
-        Vehicle *vehicle = new Vehicle;
-        scene->addItem(vehicle);
+    simulationStarted = !simulationStarted;
+    if(simulationStarted){
+        playButton->setText("Stop");
+        playButton->setColor(Qt::red);
+        timer->start(1000/vehiclesPerSec);
+    }else{
+        playButton->setText("Start");
+        playButton->setColor(Qt::darkGreen);
+        timer->stop();
     }
+}
+
+void Simulation::addVehicle(){
+    totalCarsSpawned++;
+    carsOnScreen++;
+    totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));
+    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
+    Vehicle *vehicle = new Vehicle;
+    scene->addItem(vehicle);
 }
 
 void Simulation::toggleSettingsPanel(){
@@ -245,7 +265,8 @@ void Simulation::drawGUI(){
     int playBtnY = ScreenHeight -(bottomPanelH/2);
     int playBtnW = (bottomPanelW/6) + (btnPadding*2);
     int playBtnH = (bottomPanelH/2) - (btnPadding*2);
-    Button* playButton = new Button(QString("Start  "), Qt::darkGreen, playBtnW, playBtnH, 0, 1, bottomPanel);
+
+    playButton = new Button(QString("Start "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
@@ -276,17 +297,17 @@ void Simulation::drawStatistics(){
     statisticsPanel->setZValue(2);
 
     int statisticsTextSize = 4;
-    QGraphicsTextItem* statisticsTextsItems[statisticsTextSize] = {collisonsDisplay, collisonsAvoidedDisplay, carsOnScreenDisplay, totalCarsSpawnedDisplay};
+
+    QGraphicsTextItem** statisticsTextsItems[4] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
     QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Cars On Screen: ", "Total Cars Spawned: "};
     int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
 
     for(int i=0; i<statisticsTextSize; i++){
-        statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
-        statisticsTextsItems[i]->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
-        statisticsTextsItems[i]->setFont(f);
-        statisticsTextsItems[i]->setDefaultTextColor(Qt::white);
+        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
+        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
+        (*statisticsTextsItems[i])->setFont(f);
+        (*statisticsTextsItems[i])->setDefaultTextColor(Qt::white);
     }
-
 
     scene->addItem(statisticsPanel);
 }

@@ -13,6 +13,7 @@ public:
 
     QGraphicsScene * scene;
     QGraphicsRectItem* settingsPanel;
+    QGraphicsRectItem* bottomPanel;
     QTimer* timer;
     bool simulationStarted;
     bool trafficLightsEnabled;
@@ -50,6 +51,7 @@ public slots:
     void incrementSpeedRangeUpperBound();
     void decrementSpeedRangeUpperBound();
     void drawStatistics();
+    void drawTrafficLights();
 private:
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void drawGUI();

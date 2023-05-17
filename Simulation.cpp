@@ -35,6 +35,8 @@ Simulation::Simulation(QWidget *parent){
     
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
+  
+    drawTrafficLights();
 
     show();
 }
@@ -71,26 +73,30 @@ void Simulation::drawGUI(){
 
     int settingsBtnW = 50;
     int settingsBtnH = 50;
-    int settingsBtnX = screenWidth - (screenWidth/10);
-    int settingsBtnY = (screenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH,0, 0);
+    int settingsBtnX = ScreenWidth - (ScreenWidth/10);
+    int settingsBtnY = (ScreenHeight/10) - settingsBtnH;
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::blue, settingsBtnW, settingsBtnH,0, 0);
+
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
     connect(settingsBtn,SIGNAL(clicked()),settingsPanel,SLOT(toggle()));
     scene->addItem(settingsBtn);
 
     // Bottom panel
     int bottomPanelX = 0;
-    int bottomPanelY = screenHeight - (screenHeight/4);
-    int bottomPanelW = screenWidth;
-    int bottomPanelH = screenHeight/4;
-    QGraphicsRectItem* bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
+    int bottomPanelY = ScreenHeight - (ScreenHeight/4);
+    int bottomPanelW = ScreenWidth;
+    int bottomPanelH = ScreenHeight/4;
+    bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
+
     bottomPanel->setZValue(1);
+
 
     // Start/Stop button in Bottom Panel
     int playBtnX = bottomPanelX + bottomPanelW/30;
     int playBtnY = screenHeight -(bottomPanelH/2);
     int playBtnW = (bottomPanelW/6) + (btnPadding*2);
     int playBtnH = (bottomPanelH/2) - (btnPadding*2);
+
     playButton = new Button(QString("Start "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
@@ -110,3 +116,35 @@ QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QC
     panel->setOpacity(opacity);
     return panel;
 }
+
+void Simulation::drawTrafficLights(){
+    Button* trafficLight1;
+    Button* trafficLight2;
+    Button* trafficLight3;
+    Button* trafficLight4;
+
+    Button* trafficLightsList[4] = {trafficLight1, trafficLight2, trafficLight3, trafficLight4};
+
+    // create with loop and add location manually
+    for(int i=0; i<4;i++){
+    int trafficLightW = 25;
+    int trafficLightH = 25;
+    if(i%2 ==0){
+    trafficLightsList[i] = new Button(QString(""), Qt::green, trafficLightW, trafficLightH, 0, 0, bottomPanel);
+    }
+    else{
+        trafficLightsList[i] = new Button(QString(""), Qt::red, trafficLightW, trafficLightH, 0, 0, bottomPanel);
+    }
+    trafficLightsList[i]->setOpacity(1);
+    trafficLightsList[i]->setEnabled(false);
+}
+
+    //Green lights
+    trafficLightsList[0]->setPos(ScreenWidth -(ScreenWidth- ScreenWidth/3.55), ScreenWidth/6);
+    trafficLightsList[2]->setPos(ScreenWidth/1.55, ScreenWidth/1.65);
+
+    //Red lights
+    trafficLightsList[1]->setPos(ScreenWidth - ScreenWidth/3.2, ScreenWidth/4.8);
+    trafficLightsList[3]->setPos(ScreenWidth/4, ScreenWidth/1.8);
+}
+

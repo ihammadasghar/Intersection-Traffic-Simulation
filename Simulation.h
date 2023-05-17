@@ -13,6 +13,7 @@ class Simulation: public QGraphicsView{
 public:
     Simulation(QWidget * parent=0);
     QGraphicsScene * scene;
+    QGraphicsRectItem* bottomPanel;
     QTimer* timer;
     SettingsPanel* settingsPanel;
     StatisticsPanel* statisticsPanel;
@@ -24,7 +25,8 @@ public:
 public slots:
     void start();
     void addVehicle();
-
+    void drawTrafficLights();
+  
 private:
     void drawGUI();
 

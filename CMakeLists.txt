@@ -18,6 +18,8 @@ set(PROJECT_SOURCES
         Vehicle.h
         Button.cpp
         Button.h
+        SettingsPanel.cpp
+        SettingsPanel.h
 
 )
 

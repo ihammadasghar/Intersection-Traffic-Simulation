@@ -29,31 +29,12 @@ Simulation::Simulation(QWidget *parent){
     setFixedSize(screenWidth,screenHeight);
 
     // Initial Settings
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, unitsOfTime, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
-    scene->addItem(settingsPanel);
-
-
-    // Settings panel toggle button
-    int settingsBtnW = 50;
-    int settingsBtnH = 50;
-    int settingsBtnX = screenWidth - (screenWidth/10);
-    int settingsBtnY = (screenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH,0, 0);
-    settingsBtn->setPos(settingsBtnX, settingsBtnY);
-    connect(settingsBtn,SIGNAL(clicked()),settingsPanel,SLOT(toggle()));
-    scene->addItem(settingsBtn);
-
     simulationStarted = false;
-    collisons = 0;
-    collisonsAvoided=0;
-    carsOnScreen =0;
-    totalCarsSpawned=0;
-
-    timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
 
     drawGUI();
-    drawStatistics();
+    
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
 
     show();
 }
@@ -72,20 +53,31 @@ void Simulation::start(){
 }
 
 void Simulation::decrementCarsOnScreen(){
-    carsOnScreen--;
-    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
+    statisticsPanel->decrementCarsOnScreen();
 }
 
 void Simulation::addVehicle(){
-    totalCarsSpawned++;
-    carsOnScreen++;
-    totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));
-    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
+    statisticsPanel->incrementTotalCarsSpawned();
+    statisticsPanel->incrementCarsOnScreen();
+
     Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound);
     scene->addItem(vehicle);
 }
 
 void Simulation::drawGUI(){
+    // Settings panel
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, unitsOfTime, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
+    scene->addItem(settingsPanel);
+
+    int settingsBtnW = 50;
+    int settingsBtnH = 50;
+    int settingsBtnX = screenWidth - (screenWidth/10);
+    int settingsBtnY = (screenHeight/10) - settingsBtnH;
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::yellow, settingsBtnW, settingsBtnH,0, 0);
+    settingsBtn->setPos(settingsBtnX, settingsBtnY);
+    connect(settingsBtn,SIGNAL(clicked()),settingsPanel,SLOT(toggle()));
+    scene->addItem(settingsBtn);
+
     // Bottom panel
     int bottomPanelX = 0;
     int bottomPanelY = screenHeight - (screenHeight/4);
@@ -103,6 +95,8 @@ void Simulation::drawGUI(){
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
+    statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
+
     scene->addItem(bottomPanel);
 
 }
@@ -115,33 +109,4 @@ QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QC
     panel->setBrush(brush);
     panel->setOpacity(opacity);
     return panel;
-}
-
-void Simulation::drawStatistics(){
-
-    QFont f;
-    f.setPointSize(20);
-
-    // Statistics panel
-    int statisticsPanelX = 168;
-    int statisticsPanelY = screenHeight - (screenHeight/4) +10;
-    int statisticsPanelW = screenWidth - 180;
-    int statisticsPanelH = (screenHeight)/3 -80;
-    QGraphicsRectItem* statisticsPanel = drawPanel(statisticsPanelX, statisticsPanelY, statisticsPanelW, statisticsPanelH, Qt::lightGray, 0.7);
-    statisticsPanel->setZValue(2);
-
-    int statisticsTextSize = 4;
-
-    QGraphicsTextItem** statisticsTextsItems[4] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Cars On Screen: ", "Total Cars Spawned: "};
-    int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
-
-    for(int i=0; i<statisticsTextSize; i++){
-        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), statisticsPanel);
-        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
-        (*statisticsTextsItems[i])->setFont(f);
-        (*statisticsTextsItems[i])->setDefaultTextColor(Qt::white);
-    }
-
-    scene->addItem(statisticsPanel);
 }

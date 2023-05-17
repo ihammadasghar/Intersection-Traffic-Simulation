@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
         Button.h
         SettingsPanel.cpp
         SettingsPanel.h
+        StatisticsPanel.cpp
+        StatisticsPanel.h
 
 )
 

@@ -6,35 +6,24 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include "SettingsPanel.h"
+#include "StatisticsPanel.h"
 
 class Simulation: public QGraphicsView{
     Q_OBJECT
 public:
     Simulation(QWidget * parent=0);
-
     QGraphicsScene * scene;
     QTimer* timer;
     SettingsPanel* settingsPanel;
+    StatisticsPanel* statisticsPanel;
     bool simulationStarted;
-    int collisons;
-    int collisonsAvoided;
-    int totalCarsSpawned;
-    int carsOnScreen;
-
     Button* playButton;
-
-    QGraphicsTextItem* collisonsDisplay;
-    QGraphicsTextItem* collisonsAvoidedDisplay;
-    QGraphicsTextItem* totalCarsSpawnedDisplay;
-    QGraphicsTextItem* carsOnScreenDisplay;
-
     void decrementCarsOnScreen();
+    QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
 
 public slots:
     void start();
     void addVehicle();
-    void drawStatistics();
-    QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
 
 private:
     void drawGUI();

@@ -12,12 +12,16 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp
-        vehicle.cpp
         Simulation.cpp
         Simulation.h
+        Vehicle.cpp
         Vehicle.h
         Button.cpp
         Button.h
+        SettingsPanel.cpp
+        SettingsPanel.h
+        StatisticsPanel.cpp
+        StatisticsPanel.h
 
 )
 

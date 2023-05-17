@@ -2,17 +2,13 @@
 #include <QTimer>
 #include <QGraphicsScene>
 #include <QList>
-#include <stdlib.h>
 #include "Simulation.h"
-#include <string>
 #include <cmath>
-#include <iostream>
 
 extern Simulation * simulation;
 
-Vehicle::Vehicle(QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
+Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
     int random_number = 400;
-
 
     int pickedCar = (rand() % 5) - 1;
     QString carTypes[5] = {"Red", "Green", "Yellow", "Taxi", "Orange"};
@@ -24,7 +20,7 @@ Vehicle::Vehicle(QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
 
-    pps = ((rand() % (simulation->speedRangeUpperBound)) + (simulation->speedRangeLowerBound))/30; // Pixels Per Sec
+    pps = ((rand() % (speedRangeUpperBound)) + (speedRangeLowerBound))/30; // Pixels Per Sec
 
     QTimer * timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
@@ -71,8 +67,7 @@ void Vehicle::move(){
 }
 
 void Vehicle::selfDestruct(){
-    simulation->carsOnScreen--;
-    simulation->carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(simulation->carsOnScreen));
+    simulation->decrementCarsOnScreen();
     scene()->removeItem(this);
     delete this;
 }

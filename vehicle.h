@@ -13,6 +13,9 @@ public:
     float pps;
     float x;
     float y;
+    int initialRotation;
+    int initialX;
+    int initialY;
 public slots:
     void move();
 };

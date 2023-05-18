@@ -10,13 +10,17 @@ extern Simulation * simulation;
 Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
     int random_number = 400;
 
-    int pickedCar = (rand() % 5) - 1;
+    // int pickedCar = (rand() % 5) - 1;
+    int pickedCar = 1;
     QString carTypes[5] = {"Red", "Green", "Yellow", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
-    x = 1;
-    y = 200;
-    setPos((int)x, (int)y);
+    x = 0;
+    y = 0;
+    initialX = 1;
+    initialY = 300;
+    initialRotation = 0;
+    setPos(initialX, initialY);
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
 
@@ -31,19 +35,19 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, QGraphicsIt
 
 void Vehicle::move(){
     // move
-    float p1 = 400;
-    float a = 5000;
+    float p1 = 300;
+    float a = 1700;
     float h = 3.5;
     float slope = (a/pow((x)+(2*h)-p1, 2));
     float angle = atan(slope);
-    int rot = angle*180/3.1415;
-    setRotation(rot);
+    float rotation = (angle) + ((float)initialRotation*3.1415/180);
+    setRotation(rotation*180/3.1415);
 
     float changeInX = pps*cos(angle);
     float changeInY = pps*sin(angle);
     x += changeInX;
     y += changeInY;
-    setPos((int)x, (int)y);
+    setPos((int)x + initialX, (int)y + initialY);
 
     // destroy vehicle when it hits the bottom border
     if (pos().y() > 500){

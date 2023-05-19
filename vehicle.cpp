@@ -7,16 +7,16 @@
 
 extern Simulation * simulation;
 
-Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
-    int random_number = 400;
-
-    int pickedCar = (rand() % 5) - 1;
-    QString carTypes[5] = {"Red", "Green", "Yellow", "Taxi", "Orange"};
+Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption* spawnOption, QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
+    int pickedCar = (rand() % 4);
+    QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
-    x = 1;
-    y = 200;
-    setPos((int)x, (int)y);
+    x = 0;
+    y = 0;
+    this->spawnOption = spawnOption;
+    setRotation((spawnOption->initialRotation) * 180/3.1415);
+    setPos(spawnOption->initialX, spawnOption->initialY);
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
 
@@ -30,38 +30,63 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, QGraphicsIt
 }
 
 void Vehicle::move(){
+    auto straight = [](float a, float p1, float h, int x) {return 0;};
+    auto leftTurn = [](float a, float p1, float h, int x) {return -a/pow(x-p1, 2);};
+    auto rightTurn = [](float a, float p1, float h, int x) {return a/pow(x+(2*h)-p1, 2);};
     // move
-    float p1 = 400;
-    float a = 5000;
-    float h = 3.5;
-    float slope = (a/pow((x)+(2*h)-p1, 2));
+    float p1 = 320;
+    float a = 1700;
+    float h = 30;
+    float slope = (spawnOption->turnDirection == "right" ? rightTurn(a, p1, h, x) : 0);
+    if(spawnOption->turnDirection == "left") slope = leftTurn(a, p1, h, x);
+
     float angle = atan(slope);
-    int rot = angle*180/3.1415;
-    setRotation(rot);
 
     float changeInX = pps*cos(angle);
     float changeInY = pps*sin(angle);
     x += changeInX;
     y += changeInY;
-    setPos((int)x, (int)y);
+
+    int finalX, finalY;
+    float rotation = (float)(spawnOption->initialRotation) * 180/3.1415;
+    rotation = rotation + angle;
+    setRotation(rotation*180/3.1415);
+
+    if(spawnOption->initialDirection == "right"){
+        finalX = spawnOption->initialX + (int)x;
+        finalY = spawnOption->initialY + (int)y;
+    }
+    else if(spawnOption->initialDirection == "left"){
+        finalX = spawnOption->initialX - (int)x;
+        finalY = spawnOption->initialY - (int)y;
+    }
+    else if(spawnOption->initialDirection == "up"){
+        finalY = spawnOption->initialY - (int)x;
+        finalX = spawnOption->initialX + (int)y;
+    }
+    else if(spawnOption->initialDirection == "down"){
+        finalY = spawnOption->initialY + (int)x;
+        finalX = spawnOption->initialX - (int)y;
+    }
+    setPos(finalX, finalY);
 
     // destroy vehicle when it hits the bottom border
-    if (pos().y() > 500){
+    if (pos().y() > 600){
         selfDestruct();
     }
 
     // destroy vehicle when it hits the top border
-    else if (pos().y() < -100){
+    else if (pos().y() < 0){
         selfDestruct();
     }
 
     // destroy vehicle when it hits the left border
-    else if (pos().x() < -100){
+    else if (pos().x() < 0){
         selfDestruct();
     }
 
     // destroy vehicle when it hits the right border
-    else if (pos().x() > 750){
+    else if (pos().x() > 600){
         selfDestruct();
     }
 }

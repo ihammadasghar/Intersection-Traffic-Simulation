@@ -7,6 +7,7 @@
 #include <QGraphicsTextItem>
 #include "SettingsPanel.h"
 #include "StatisticsPanel.h"
+#include "SpawnOption.h"
 
 class Simulation: public QGraphicsView{
     Q_OBJECT
@@ -21,6 +22,7 @@ public:
     Button* playButton;
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
+    void addSpawnOptions();
 
 public slots:
     void start();

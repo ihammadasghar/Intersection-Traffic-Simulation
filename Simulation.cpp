@@ -5,8 +5,8 @@
 #include "Vehicle.h"
 #include "string"
 
-static constexpr int screenWidth = 680;
-static constexpr int screenHeight = 715;
+static constexpr int screenWidth = 600;
+static constexpr int screenHeight = 800;
 static constexpr int vehicleCount = 1;
 static constexpr int btnPadding = 10;
 static constexpr int initialSpeedRangeLowerBound = 80;
@@ -15,6 +15,25 @@ static constexpr int vehiclesPerSec = 1;
 static constexpr int trafficLightsEnabled = false;
 static constexpr int soundEffectsEnabled = true;
 static constexpr int unitsOfTime = 60;
+SpawnOption* spawnOptions[16] = {
+    new SpawnOption(0,310,0,"right","left"),
+    new SpawnOption(0,340,0,"right","right"),
+    new SpawnOption(600,260,180,"left","right"),
+    new SpawnOption(600,290,180,"left","left"),
+    new SpawnOption(260,0,270,"down","right"),
+    new SpawnOption(290,0,270,"down","left"),
+    new SpawnOption(310,600,90,"up","left"),
+    new SpawnOption(340,600,90,"up","right"),
+
+    new SpawnOption(0,310,0,"right","straight"),
+    new SpawnOption(0,340,0,"right","straight"),
+    new SpawnOption(600,260,180,"left","straight"),
+    new SpawnOption(600,290,180,"left","straight"),
+    new SpawnOption(260,0,270,"down","straight"),
+    new SpawnOption(290,0,270,"down","straight"),
+    new SpawnOption(310,600,90,"up","straight"),
+    new SpawnOption(340,600,90,"up","straight")
+};
 
 Simulation::Simulation(QWidget *parent){
     // create the scene
@@ -61,8 +80,8 @@ void Simulation::decrementCarsOnScreen(){
 void Simulation::addVehicle(){
     statisticsPanel->incrementTotalCarsSpawned();
     statisticsPanel->incrementCarsOnScreen();
-
-    Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound);
+    int pickedSpawnOption = (rand() % 16);
+    Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound, spawnOptions[pickedSpawnOption]);
     scene->addItem(vehicle);
 }
 

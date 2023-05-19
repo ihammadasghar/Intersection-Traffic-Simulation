@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         SettingsPanel.h
         StatisticsPanel.cpp
         StatisticsPanel.h
+        SpawnOption.cpp
+        SpawnOption.h
 
 )
 
@@ -61,7 +63,6 @@ set(vehicles_resource_files
     "static/images/carRed.png"
     "static/images/carGreen.png"
     "static/images/carOrange.png"
-    "static/images/carYellow.png"
     "static/images/carTaxi.png"
 )
 

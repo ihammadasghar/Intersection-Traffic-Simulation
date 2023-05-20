@@ -22,8 +22,8 @@ SpawnOption* spawnOptions[16] = {
     new SpawnOption(600,290,180,"left","left"),
     new SpawnOption(260,0,270,"down","right"),
     new SpawnOption(290,0,270,"down","left"),
-    new SpawnOption(310,600,90,"up","left"),
-    new SpawnOption(340,600,90,"up","right"),
+    new SpawnOption(310,550,90,"up","left"),
+    new SpawnOption(340,550,90,"up","right"),
 
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
@@ -31,8 +31,8 @@ SpawnOption* spawnOptions[16] = {
     new SpawnOption(600,290,180,"left","straight"),
     new SpawnOption(260,0,270,"down","straight"),
     new SpawnOption(290,0,270,"down","straight"),
-    new SpawnOption(310,600,90,"up","straight"),
-    new SpawnOption(340,600,90,"up","straight")
+    new SpawnOption(310,550,90,"up","straight"),
+    new SpawnOption(340,550,90,"up","straight")
 };
 
 Simulation::Simulation(QWidget *parent){
@@ -71,6 +71,13 @@ void Simulation::start(){
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
         timer->stop();
+    }
+}
+
+void Simulation::destroyCollidingVehicles(QList<QGraphicsItem *> list){
+    statisticsPanel->incrementCollisions();
+    foreach(QGraphicsItem* a, list){
+        ((Vehicle*)a)->selfDestruct();
     }
 }
 

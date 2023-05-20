@@ -23,6 +23,7 @@ public:
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void addSpawnOptions();
+    void destroyCollidingVehicles(QList<QGraphicsItem *> list);
     int mm,ss;
     QGraphicsTextItem* displayTimer;
 

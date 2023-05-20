@@ -4,8 +4,8 @@
 extern Simulation * simulation;
 
 StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPadding, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
-    collisons = 0;
-    collisonsAvoided=0;
+    collisions = 0;
+    collisionsAvoided=0;
     carsOnScreen =0;
     totalCarsSpawned=0;
 
@@ -27,9 +27,11 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
     setZValue(2);
 
     int statisticsTextSize = 4;
+
     QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
     QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
     int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
+
 
     for(int i=0; i<statisticsTextSize; i++){
         *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), this);
@@ -54,6 +56,7 @@ void StatisticsPanel::reset(){
     for(int i=0; i<statisticsTextSize; i++){
         (*statisticsTextsItems[i])->setPlainText(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]));
     }
+
 }
 
 void StatisticsPanel::incrementTotalCarsSpawned(){

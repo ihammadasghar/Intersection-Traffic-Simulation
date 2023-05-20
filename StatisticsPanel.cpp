@@ -28,9 +28,10 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
 
     int statisticsTextSize = 4;
 
-    QGraphicsTextItem** statisticsTextsItems[4] = {&collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
-    int statisticsValues[statisticsTextSize] = {collisions, collisionsAvoided, carsOnScreen, totalCarsSpawned};
+    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
+    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
+    int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
+
 
     for(int i=0; i<statisticsTextSize; i++){
         *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), this);
@@ -41,9 +42,21 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
 
 }
 
-void StatisticsPanel::incrementCollisions(){
-    collisions++;
-    collisionsDisplay->setPlainText(QString("Collisions: ") + QString::number(collisions));
+void StatisticsPanel::reset(){
+    collisons = 0;
+    collisonsAvoided=0;
+    carsOnScreen =0;
+    totalCarsSpawned=0;
+
+    int statisticsTextSize = 4;
+    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
+    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
+    int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
+
+    for(int i=0; i<statisticsTextSize; i++){
+        (*statisticsTextsItems[i])->setPlainText(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]));
+    }
+
 }
 
 void StatisticsPanel::incrementTotalCarsSpawned(){
@@ -57,6 +70,7 @@ void StatisticsPanel::incrementCarsOnScreen(){
 }
 
 void StatisticsPanel::decrementCarsOnScreen(){
+    if(carsOnScreen == 0) return;
     carsOnScreen--;
     carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
 }

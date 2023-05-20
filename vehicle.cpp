@@ -30,7 +30,14 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
 }
 
 void Vehicle::move(){
-    auto straight = [](float a, float p1, float h, int x) {return 0;};
+    // detect collisions
+    QList<QGraphicsItem *> list = scene()->collidingItems(this);
+    if(!(list.isEmpty())){
+        simulation->destroyCollidingVehicles(list);
+        selfDestruct();
+        return;
+    }
+
     auto leftTurn = [](float a, float p1, float h, int x) {return -a/pow(x-p1, 2);};
     auto rightTurn = [](float a, float p1, float h, int x) {return a/pow(x+(2*h)-p1, 2);};
     // move
@@ -71,7 +78,7 @@ void Vehicle::move(){
     setPos(finalX, finalY);
 
     // destroy vehicle when it hits the bottom border
-    if (pos().y() > 600){
+    if (pos().y() > 550){
         selfDestruct();
     }
 

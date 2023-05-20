@@ -3,10 +3,10 @@
 
 extern Simulation * simulation;
 
-SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialTrafficLightsEnabled, bool initialSoundEffectsEnabled, int initialUnitsOfTime, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialTrafficLightsEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
     trafficLightsEnabled = initialTrafficLightsEnabled;
     soundEffectsEnabled = initialSoundEffectsEnabled;
-    unitsOfTime = initialUnitsOfTime;
+    vehiclesPerSec = initialVehiclesPerSec;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
     speedRangeUpperBound = initialSpeedRangeUpperBound;
 
@@ -64,26 +64,26 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     // Units of Time setting
     settingY += settingsPanelH/5;
 
-    unitsOfTimeSetting = new QGraphicsTextItem(QString("Units Of Time: ") + QString::number(unitsOfTime), this);
-    unitsOfTimeSetting->setPos(settingX, settingY);
-    unitsOfTimeSetting->setFont(f);
-    unitsOfTimeSetting->setDefaultTextColor(Qt::white);
+    vehiclesPerSecSetting = new QGraphicsTextItem(QString("Cars Per Second: ") + QString::number(vehiclesPerSec), this);
+    vehiclesPerSecSetting->setPos(settingX, settingY);
+    vehiclesPerSecSetting->setFont(f);
+    vehiclesPerSecSetting->setDefaultTextColor(Qt::white);
 
-    int unitsOfTimeIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/2;
-    int unitsOfTimeIncBtnH = (settingsPanelH/5) - (btnPadding*2);
-    int unitsOfTimeIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
-    int unitsOfTimeIncBtnY = settingY;
-    Button* unitsOfTimeIncBtn = new Button(QString("+"), Qt::green, unitsOfTimeIncBtnW, unitsOfTimeIncBtnH, 0, 0, this);
-    unitsOfTimeIncBtn->setPos(unitsOfTimeIncBtnX, unitsOfTimeIncBtnY);
-    connect(unitsOfTimeIncBtn,SIGNAL(clicked()),this,SLOT(incrementUnitsOfTime()));
+    int vehiclesPerSecIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/2;
+    int vehiclesPerSecIncBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int vehiclesPerSecIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    int vehiclesPerSecIncBtnY = settingY;
+    Button* vehiclesPerSecIncBtn = new Button(QString("+"), Qt::green, vehiclesPerSecIncBtnW, vehiclesPerSecIncBtnH, 0, 0, this);
+    vehiclesPerSecIncBtn->setPos(vehiclesPerSecIncBtnX, vehiclesPerSecIncBtnY);
+    connect(vehiclesPerSecIncBtn,SIGNAL(clicked()),this,SLOT(incrementVehiclesPerSec()));
 
-    int unitsOfTimeDecBtnW = unitsOfTimeIncBtnW;
-    int unitsOfTimeDecBtnH = (settingsPanelH/5) - (btnPadding*2);
-    int unitsOfTimeDecBtnX = unitsOfTimeIncBtnX + unitsOfTimeIncBtnW;
-    int unitsOfTimeDecBtnY = unitsOfTimeIncBtnY;
-    Button* unitsOfTimeDecBtn = new Button(QString("-"), Qt::red, unitsOfTimeDecBtnW, unitsOfTimeDecBtnH, 0, 0, this);
-    unitsOfTimeDecBtn->setPos(unitsOfTimeDecBtnX, unitsOfTimeDecBtnY);
-    connect(unitsOfTimeDecBtn,SIGNAL(clicked()),this,SLOT(decrementUnitsOfTime()));
+    int vehiclesPerSecDecBtnW = vehiclesPerSecIncBtnW;
+    int vehiclesPerSecDecBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int vehiclesPerSecDecBtnX = vehiclesPerSecIncBtnX + vehiclesPerSecIncBtnW;
+    int vehiclesPerSecDecBtnY = vehiclesPerSecIncBtnY;
+    Button* vehiclesPerSecDecBtn = new Button(QString("-"), Qt::red, vehiclesPerSecDecBtnW, vehiclesPerSecDecBtnH, 0, 0, this);
+    vehiclesPerSecDecBtn->setPos(vehiclesPerSecDecBtnX, vehiclesPerSecDecBtnY);
+    connect(vehiclesPerSecDecBtn,SIGNAL(clicked()),this,SLOT(decrementVehiclesPerSec()));
 
     // Speed Range setting
     settingY += settingsPanelH/5;
@@ -155,14 +155,14 @@ void SettingsPanel::toggleSoundEffects(){
     soundEffectsSetting->setPlainText(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
 }
 
-void SettingsPanel::incrementUnitsOfTime(){
-    unitsOfTime++;
-    unitsOfTimeSetting->setPlainText(QString("Units Of Time: ") + QString::number(unitsOfTime));
+void SettingsPanel::incrementVehiclesPerSec(){
+    vehiclesPerSec++;
+    vehiclesPerSecSetting->setPlainText(QString("Cars Per Second: ") + QString::number(vehiclesPerSec));
 }
 
-void SettingsPanel::decrementUnitsOfTime(){
-    unitsOfTime--;
-    unitsOfTimeSetting->setPlainText(QString("Units Of Time: ") + QString::number(unitsOfTime));
+void SettingsPanel::decrementVehiclesPerSec(){
+    vehiclesPerSec--;
+    vehiclesPerSecSetting->setPlainText(QString("Cars Per Second: ") + QString::number(vehiclesPerSec));
 }
 
 void SettingsPanel::incrementSpeedRangeLowerBound(){

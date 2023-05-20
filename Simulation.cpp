@@ -14,7 +14,6 @@ static constexpr int initialSpeedRangeUpperBound = 100;
 static constexpr int vehiclesPerSec = 1;
 static constexpr int trafficLightsEnabled = false;
 static constexpr int soundEffectsEnabled = true;
-static constexpr int unitsOfTime = 60;
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
@@ -24,7 +23,6 @@ SpawnOption* spawnOptions[16] = {
     new SpawnOption(290,0,270,"down","left"),
     new SpawnOption(310,600,90,"up","left"),
     new SpawnOption(340,600,90,"up","right"),
-
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
     new SpawnOption(600,260,180,"left","straight"),
@@ -66,7 +64,7 @@ void Simulation::start(){
     if(simulationStarted){
         playButton->setText("Stop");
         playButton->setColor(Qt::red);
-        timer->start(1000/vehiclesPerSec);
+        timer->start(1000/(settingsPanel->vehiclesPerSec));
     }else{
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
@@ -88,7 +86,7 @@ void Simulation::addVehicle(){
 
 void Simulation::drawGUI(){
     // Settings panel
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, unitsOfTime, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
     scene->addItem(settingsPanel);
 
     int settingsBtnW = 50;

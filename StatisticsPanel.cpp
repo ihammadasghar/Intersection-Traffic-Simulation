@@ -29,7 +29,7 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
     int statisticsTextSize = 4;
 
     QGraphicsTextItem** statisticsTextsItems[4] = {&collisonsDisplay, &collisonsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Cars On Screen: ", "Total Cars Spawned: "};
+    QString statisticsTexts[statisticsTextSize] = {"Collisons: ", "Collisons Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
     int statisticsValues[statisticsTextSize] = {collisons, collisonsAvoided, carsOnScreen, totalCarsSpawned};
 
     for(int i=0; i<statisticsTextSize; i++){

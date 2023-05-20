@@ -164,6 +164,7 @@ void SettingsPanel::incrementVehiclesPerSec(){
 }
 
 void SettingsPanel::decrementVehiclesPerSec(){
+    if(vehiclesPerSec == 0) return;
     vehiclesPerSec--;
     vehiclesPerSecSetting->setPlainText(QString("Cars Per Second: ") + QString::number(vehiclesPerSec));
 }
@@ -177,6 +178,7 @@ void SettingsPanel::incrementSpeedRangeLowerBound(){
 }
 
 void SettingsPanel::decrementSpeedRangeLowerBound(){
+    if(speedRangeLowerBound == 0) return;
     speedRangeLowerBound--;
     speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
 }

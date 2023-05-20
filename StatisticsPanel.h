@@ -16,6 +16,7 @@ public:
     QGraphicsTextItem* collisonsAvoidedDisplay;
     QGraphicsTextItem* totalCarsSpawnedDisplay;
     QGraphicsTextItem* carsOnScreenDisplay;
+    void reset();
     void incrementTotalCarsSpawned();
     void incrementCarsOnScreen();
     void decrementCarsOnScreen();

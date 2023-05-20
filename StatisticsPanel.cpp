@@ -41,6 +41,13 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
 
 }
 
+void StatisticsPanel::reset(){
+    collisons = 0;
+    collisonsAvoided=0;
+    carsOnScreen =0;
+    totalCarsSpawned=0;
+}
+
 void StatisticsPanel::incrementTotalCarsSpawned(){
     totalCarsSpawned++;
     totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));

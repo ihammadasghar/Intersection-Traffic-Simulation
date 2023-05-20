@@ -126,23 +126,26 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     connect(speedRangeUpperBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeUpperBound()));
 
     // Apply Changes Button
-    int applyChangesBtnW = settingsPanelW - (settingsPanelW/2);
-    int applyChangesBtnH = settingsPanelH/5;
-    int applyChangesBtnX = settingsPanelX + (settingsPanelW/4);
-    int applyChangesBtnY = settingsPanelY + settingsPanelH - applyChangesBtnH - btnPadding;
-    Button* applyChangesBtn = new Button(QString("Apply"), Qt::yellow, applyChangesBtnW, applyChangesBtnH, 0, 0, this);
-    applyChangesBtn->setPos(applyChangesBtnX, applyChangesBtnY);
-    connect(applyChangesBtn,SIGNAL(clicked()),this,SLOT(toggle()));
+    int restartBtnW = settingsPanelW - (settingsPanelW/2);
+    int restartBtnH = settingsPanelH/5;
+    int restartBtnX = settingsPanelX + (settingsPanelW/4);
+    int restartBtnY = settingsPanelY + settingsPanelH - restartBtnH - btnPadding;
+    Button* restartBtn = new Button(QString("Restart"), Qt::yellow, restartBtnW, restartBtnH, 0, 0, this);
+    restartBtn->setPos(restartBtnX, restartBtnY);
+    connect(restartBtn,SIGNAL(clicked()),this,SLOT(restart()));
 
     this->setVisible(false);
 }
 
 void SettingsPanel::toggle(){
-    if(isVisible()){
-    simulation->resetTimer();
-    simulation->start();
-    }
     setVisible(!isVisible());
+}
+
+void SettingsPanel::restart(){
+    toggle();
+    simulation->resetTimer();
+    simulation->statisticsPanel->reset();
+    simulation->start();
 }
 
 void SettingsPanel::toggleTrafficLights(){

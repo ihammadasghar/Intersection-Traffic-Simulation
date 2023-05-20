@@ -30,6 +30,7 @@ public slots:
     void decrementSpeedRangeLowerBound();
     void incrementSpeedRangeUpperBound();
     void decrementSpeedRangeUpperBound();
+    void restart();
 
 };
 

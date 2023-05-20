@@ -87,7 +87,7 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
 
     // Speed Range setting
     settingY += settingsPanelH/5;
-    speedRangeSetting = new QGraphicsTextItem(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), this);
+    speedRangeSetting = new QGraphicsTextItem(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound), this);
 
     speedRangeSetting->setPos(settingX, settingY);
     speedRangeSetting->setFont(f);
@@ -138,6 +138,10 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
 }
 
 void SettingsPanel::toggle(){
+    if(isVisible()){
+    simulation->resetTimer();
+    simulation->start();
+    }
     setVisible(!isVisible());
 }
 
@@ -165,24 +169,24 @@ void SettingsPanel::incrementSpeedRangeLowerBound(){
     // Can go higher than Upper bound
     if(speedRangeUpperBound >= speedRangeLowerBound+1){
         speedRangeLowerBound++;
-        speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
     }
 }
 
 void SettingsPanel::decrementSpeedRangeLowerBound(){
     speedRangeLowerBound--;
-    speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
 }
 
 void SettingsPanel::incrementSpeedRangeUpperBound(){
     speedRangeUpperBound++;
-    speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
 }
 
 void SettingsPanel::decrementSpeedRangeUpperBound(){
     // Cant go lower than lower bound
     if(speedRangeLowerBound <= speedRangeUpperBound-1){
         speedRangeUpperBound--;
-        speedRangeSetting->setPlainText(QString("Speed Range: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
     }
 }

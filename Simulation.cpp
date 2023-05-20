@@ -49,13 +49,14 @@ Simulation::Simulation(QWidget *parent){
 
     // Initial Settings
     simulationStarted = false;
+    mm= ss= 0;
 
     drawGUI();
     
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
+    connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
   
-    drawTrafficLights();
 
     show();
 }
@@ -121,8 +122,10 @@ void Simulation::drawGUI(){
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
+    drawTrafficLights();
 
     scene->addItem(bottomPanel);
+    drawTimer();
 
 }
 
@@ -159,11 +162,36 @@ void Simulation::drawTrafficLights(){
 }
 
     //Green lights
-    trafficLightsList[0]->setPos(screenWidth -(screenWidth- screenWidth/3.55), screenWidth/6);
-    trafficLightsList[2]->setPos(screenWidth/1.55, screenWidth/1.65);
+    trafficLightsList[0]->setPos(screenWidth -(screenWidth- screenWidth/3.5), screenWidth/4);
+    trafficLightsList[2]->setPos(screenWidth/1.53, screenWidth/1.4);
 
     //Red lights
-    trafficLightsList[1]->setPos(screenWidth - screenWidth/3.2, screenWidth/4.8);
-    trafficLightsList[3]->setPos(screenWidth/4, screenWidth/1.8);
+    trafficLightsList[1]->setPos(screenWidth - screenWidth/3.2, screenWidth/3.3);
+    trafficLightsList[3]->setPos(screenWidth/4, screenWidth/1.53);
+}
+void Simulation::drawTimer(){
+    QFont f;
+    f.setPointSize(40);
+
+    int timerX = screenWidth/15;
+    int timerY = screenWidth;
+    displayTimer = new QGraphicsTextItem(QString::number(mm)+ QString(":")+ QString::number(ss), bottomPanel);
+    displayTimer->setPos(timerX, timerY);
+    displayTimer->setFont(f);
+    displayTimer->setDefaultTextColor(Qt::white);
 }
 
+void Simulation::incrementTimer(){
+    ss++;
+    if(ss == 60){
+        mm++;
+        ss = 0;
+    }
+    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+}
+
+void Simulation::resetTimer(){
+    timer->stop();
+    mm= ss= 0;
+    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+}

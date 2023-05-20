@@ -23,11 +23,16 @@ public:
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void addSpawnOptions();
+    int mm,ss;
+    QGraphicsTextItem* displayTimer;
 
 public slots:
     void start();
     void addVehicle();
     void drawTrafficLights();
+    void drawTimer();
+    void incrementTimer();
+    void resetTimer();
   
 private:
     void drawGUI();

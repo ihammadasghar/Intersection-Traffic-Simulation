@@ -52,13 +52,11 @@ Simulation::Simulation(QWidget *parent){
     mm= ss= 0;
 
     drawGUI();
-    drawTimer();
     
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
   
-    drawTrafficLights();
 
     show();
 }
@@ -124,8 +122,10 @@ void Simulation::drawGUI(){
     connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
+    drawTrafficLights();
 
     scene->addItem(bottomPanel);
+    drawTimer();
 
 }
 
@@ -187,5 +187,11 @@ void Simulation::incrementTimer(){
         mm++;
         ss = 0;
     }
+    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+}
+
+void Simulation::resetTimer(){
+    timer->stop();
+    mm= ss= 0;
     displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
 }

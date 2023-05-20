@@ -138,6 +138,10 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
 }
 
 void SettingsPanel::toggle(){
+    if(isVisible()){
+    simulation->resetTimer();
+    simulation->start();
+    }
     setVisible(!isVisible());
 }
 

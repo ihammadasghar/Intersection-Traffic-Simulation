@@ -32,6 +32,7 @@ public slots:
     void drawTrafficLights();
     void drawTimer();
     void incrementTimer();
+    void resetTimer();
   
 private:
     void drawGUI();

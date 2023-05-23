@@ -46,7 +46,7 @@ Simulation::Simulation(QWidget *parent){
     setFixedSize(screenWidth,screenHeight);
 
     // Initial Settings
-    simulationStarted = false;
+    isStarted = false;
     mm= ss= 0;
 
     drawGUI();
@@ -59,9 +59,9 @@ Simulation::Simulation(QWidget *parent){
     show();
 }
 
-void Simulation::start(){
-    simulationStarted = !simulationStarted;
-    if(simulationStarted){
+void Simulation::startToggle(){
+    isStarted = !isStarted;
+    if(isStarted){
         playButton->setText("Stop");
         playButton->setColor(Qt::red);
         timer->start(1000/(settingsPanel->vehiclesPerSec));
@@ -69,6 +69,12 @@ void Simulation::start(){
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
         timer->stop();
+    }
+}
+
+void Simulation::destroyAllVehicles(){
+    foreach(Vehicle* v, aliveVehicles){
+        v->selfDestruct();
     }
 }
 
@@ -89,6 +95,7 @@ void Simulation::addVehicle(){
     int pickedSpawnOption = (rand() % 16);
     Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound, spawnOptions[pickedSpawnOption]);
     scene->addItem(vehicle);
+    aliveVehicles.append(vehicle);
 }
 
 void Simulation::drawGUI(){
@@ -124,7 +131,7 @@ void Simulation::drawGUI(){
 
     playButton = new Button(QString("Start "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
-    connect(playButton,SIGNAL(clicked()),this,SLOT(start()));
+    connect(playButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
     drawTrafficLights();

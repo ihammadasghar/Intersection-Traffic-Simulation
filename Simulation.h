@@ -8,6 +8,7 @@
 #include "SettingsPanel.h"
 #include "StatisticsPanel.h"
 #include "SpawnOption.h"
+#include "vehicle.h"
 
 class Simulation: public QGraphicsView{
     Q_OBJECT
@@ -18,17 +19,19 @@ public:
     QTimer* timer;
     SettingsPanel* settingsPanel;
     StatisticsPanel* statisticsPanel;
-    bool simulationStarted;
+    bool isStarted;
     Button* playButton;
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void addSpawnOptions();
     void destroyCollidingVehicles(QList<QGraphicsItem *> list);
+    void destroyAllVehicles();
     int mm,ss;
     QGraphicsTextItem* displayTimer;
+    QList<Vehicle*> aliveVehicles;
 
 public slots:
-    void start();
+    void startToggle();
     void addVehicle();
     void drawTrafficLights();
     void drawTimer();

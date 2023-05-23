@@ -138,14 +138,15 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
 }
 
 void SettingsPanel::toggle(){
+    if(simulation->isStarted) simulation->startToggle();
     setVisible(!isVisible());
 }
 
 void SettingsPanel::restart(){
-    toggle();
     simulation->resetTimer();
     simulation->statisticsPanel->reset();
-    simulation->start();
+    simulation->destroyAllVehicles();
+    toggle();
 }
 
 void SettingsPanel::toggleTrafficLights(){

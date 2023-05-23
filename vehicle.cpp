@@ -30,6 +30,9 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
 }
 
 void Vehicle::move(){
+    // check if simulation is paused
+    if(!(simulation->isStarted)) return;
+
     // detect collisions
     QList<QGraphicsItem *> list = scene()->collidingItems(this);
     if(!(list.isEmpty())){
@@ -100,6 +103,7 @@ void Vehicle::move(){
 
 void Vehicle::selfDestruct(){
     simulation->decrementCarsOnScreen();
+    simulation->aliveVehicles.removeOne(this);
     scene()->removeItem(this);
     delete this;
 }

@@ -59,6 +59,11 @@ void StatisticsPanel::reset(){
 
 }
 
+void StatisticsPanel::incrementCollisionsAvoided(){
+    collisionsAvoided++;
+    collisionsAvoidedDisplay->setPlainText(QString("Collisions Avoided: ") + QString::number(collisionsAvoided));
+}
+
 void StatisticsPanel::incrementCollisions(){
     collisions++;
     collisionsDisplay->setPlainText(QString("Collisions: ") + QString::number(collisions));

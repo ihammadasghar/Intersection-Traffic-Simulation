@@ -3,8 +3,8 @@
 
 extern Simulation * simulation;
 
-SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialTrafficLightsEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
-    trafficLightsEnabled = initialTrafficLightsEnabled;
+SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+    algorithmEnabled = initialAlgorithmEnabled;
     soundEffectsEnabled = initialSoundEffectsEnabled;
     vehiclesPerSec = initialVehiclesPerSec;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
@@ -31,18 +31,18 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     int settingY = settingsPanelY + btnPadding;
 
     // Traffic Light Toggle
-    trafficLightSetting = new QGraphicsTextItem(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"), this);
-    trafficLightSetting->setPos(settingX, settingY);
-    trafficLightSetting->setFont(f);
-    trafficLightSetting->setDefaultTextColor(Qt::white);
+    algorithmSetting = new QGraphicsTextItem(QString("Algorithm: "), this);
+    algorithmSetting->setPos(settingX, settingY);
+    algorithmSetting->setFont(f);
+    algorithmSetting->setDefaultTextColor(Qt::white);
 
-    int trafficLightBtnW = (settingsPanelW/2) - (btnPadding*2);
-    int trafficLightBtnH = (settingsPanelH/5) - (btnPadding*2);
-    int trafficLightBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
-    int trafficLightBtnY = settingY;
-    Button* trafficLightBtn = new Button(QString("O/I"), Qt::green, trafficLightBtnW, trafficLightBtnH, 0, 0, this);
-    trafficLightBtn->setPos(trafficLightBtnX, trafficLightBtnY);
-    connect(trafficLightBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
+    int algorithmBtnW = (settingsPanelW/2) - (btnPadding*2);
+    int algorithmBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int algorithmBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    int algorithmBtnY = settingY;
+    Button* algorithmBtn = new Button(QString("O/I"), Qt::green, algorithmBtnW, algorithmBtnH, 0, 0, this);
+    algorithmBtn->setPos(algorithmBtnX, algorithmBtnY);
+    connect(algorithmBtn,SIGNAL(clicked()),this,SLOT(toggleAlgorithm()));
 
     // Sound Effects Setting
     settingY += settingsPanelH/5;
@@ -149,9 +149,9 @@ void SettingsPanel::restart(){
     toggle();
 }
 
-void SettingsPanel::toggleTrafficLights(){
-    trafficLightsEnabled = !trafficLightsEnabled;
-    trafficLightSetting->setPlainText(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
+void SettingsPanel::toggleAlgorithm(){
+    algorithmEnabled = !algorithmEnabled;
+    algorithmSetting->setPlainText(QString("Traffic Lights: ") + QString(algorithmEnabled ? "On" : "Off"));
 }
 
 void SettingsPanel::toggleSoundEffects(){

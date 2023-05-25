@@ -12,9 +12,17 @@ public:
     Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption* spawnOption, QGraphicsItem * parent=0);
     void selfDestruct();
     float pps;
-    float x;
-    float y;
+    float fx;
+    float fy;
+    int x;
+    int y;
+    int rotationAngle;
+    int speed;
     SpawnOption* spawnOption;
+    QGraphicsTextItem* detailsText;
+    void updateDetails();
+    void changeSpeedOverInterval(double acceleration,int interval);
+
 public slots:
     void move();
 };

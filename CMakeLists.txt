@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
         StatisticsPanel.h
         SpawnOption.cpp
         SpawnOption.h
+        Algorithm.cpp
+        Algorithm.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

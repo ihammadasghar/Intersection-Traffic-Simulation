@@ -4,6 +4,7 @@
 #include "Simulation.h"
 #include "Vehicle.h"
 #include "string"
+#include "Algorithm.h"
 
 static constexpr int screenWidth = 600;
 static constexpr int screenHeight = 800;
@@ -54,7 +55,8 @@ Simulation::Simulation(QWidget *parent){
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
-  
+    Algorithm* a = new Algorithm("intersecting lines");
+    a->run();
 
     show();
 }
@@ -79,9 +81,15 @@ void Simulation::destroyAllVehicles(){
 }
 
 void Simulation::destroyCollidingVehicles(QList<QGraphicsItem *> list){
-    statisticsPanel->incrementCollisions();
-    foreach(QGraphicsItem* a, list){
-        ((Vehicle*)a)->selfDestruct();
+
+    foreach(QGraphicsItem* i, list){
+        Vehicle * item= dynamic_cast<Vehicle *>(i);
+        if (item)
+        {
+            item->selfDestruct();
+            statisticsPanel->incrementCollisions();
+        }
+
     }
 }
 

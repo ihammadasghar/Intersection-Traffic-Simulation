@@ -4,6 +4,7 @@
 #include <QList>
 #include "Simulation.h"
 #include <cmath>
+#include <QThread>
 
 extern Simulation * simulation;
 
@@ -12,21 +13,35 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
-    x = 0;
-    y = 0;
+    fx = 0;
+    fy = 0;
+    x = spawnOption->initialX;
+    y = spawnOption->initialY;
     this->spawnOption = spawnOption;
     setRotation((spawnOption->initialRotation) * 180/3.1415);
-    setPos(spawnOption->initialX, spawnOption->initialY);
+    setPos(x,y);
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
 
-    pps = ((rand() % (speedRangeUpperBound)) + (speedRangeLowerBound))/30; // Pixels Per Sec
+    speed = (rand() % (speedRangeUpperBound - speedRangeLowerBound)) + speedRangeLowerBound;
+    pps = speed/30; // Pixels Per Sec
+
+    QFont f;
+    f.setPointSize(12);
+    detailsText = new QGraphicsTextItem("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed), this);
+    detailsText->setPos(0, 20);
+    detailsText->setFont(f);
+    detailsText->setDefaultTextColor(Qt::yellow);
 
     QTimer * timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
 
     // start the timer 33 msec for 30 FPS
     timer->start(33);
+}
+
+void Vehicle::updateDetails(){
+    detailsText->setPlainText("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed));
 }
 
 void Vehicle::move(){
@@ -37,68 +52,96 @@ void Vehicle::move(){
     QList<QGraphicsItem *> list = scene()->collidingItems(this);
     if(!(list.isEmpty())){
         simulation->destroyCollidingVehicles(list);
-        selfDestruct();
-        return;
+        foreach(QGraphicsItem * i , list){
+            Vehicle * item= dynamic_cast<Vehicle *>(i);
+            if (item)
+            {
+                selfDestruct();
+                return;
+            }
+        }
     }
 
-    auto leftTurn = [](float a, float p1, float h, int x) {return -a/pow(x-p1, 2);};
-    auto rightTurn = [](float a, float p1, float h, int x) {return a/pow(x+(2*h)-p1, 2);};
+    auto leftTurn = [](float a, float p1, float h, int fx) {return -a/pow(fx-p1, 2);};
+    auto rightTurn = [](float a, float p1, float h, int fx) {return a/pow(fx+(2*h)-p1, 2);};
     // move
     float p1 = 320;
     float a = 1700;
     float h = 30;
-    float slope = (spawnOption->turnDirection == "right" ? rightTurn(a, p1, h, x) : 0);
-    if(spawnOption->turnDirection == "left") slope = leftTurn(a, p1, h, x);
+    float slope = (spawnOption->turnDirection == "right" ? rightTurn(a, p1, h, fx) : 0);
+    if(spawnOption->turnDirection == "left") slope = leftTurn(a, p1, h, fx);
 
     float angle = atan(slope);
 
     float changeInX = pps*cos(angle);
     float changeInY = pps*sin(angle);
-    x += changeInX;
-    y += changeInY;
+    fx += changeInX;
+    fy += changeInY;
 
-    int finalX, finalY;
     float rotation = (float)(spawnOption->initialRotation) * 180/3.1415;
-    rotation = rotation + angle;
-    setRotation(rotation*180/3.1415);
+    rotationAngle = (rotation + angle)*180/3.1415;
+    setRotation(rotationAngle);
 
     if(spawnOption->initialDirection == "right"){
-        finalX = spawnOption->initialX + (int)x;
-        finalY = spawnOption->initialY + (int)y;
+        x = spawnOption->initialX + (int)fx;
+        y = spawnOption->initialY + (int)fy;
     }
     else if(spawnOption->initialDirection == "left"){
-        finalX = spawnOption->initialX - (int)x;
-        finalY = spawnOption->initialY - (int)y;
+        x = spawnOption->initialX - (int)fx;
+        y = spawnOption->initialY - (int)fy;
     }
     else if(spawnOption->initialDirection == "up"){
-        finalY = spawnOption->initialY - (int)x;
-        finalX = spawnOption->initialX + (int)y;
+        y = spawnOption->initialY - (int)fx;
+        x = spawnOption->initialX + (int)fy;
     }
     else if(spawnOption->initialDirection == "down"){
-        finalY = spawnOption->initialY + (int)x;
-        finalX = spawnOption->initialX - (int)y;
+        y = spawnOption->initialY + (int)fx;
+        x = spawnOption->initialX - (int)fy;
     }
-    setPos(finalX, finalY);
+    setPos(x, y);
+
+    updateDetails();
 
     // destroy vehicle when it hits the bottom border
-    if (pos().y() > 550){
+    if (y > 550){
         selfDestruct();
+        simulation->statisticsPanel->incrementCollisionsAvoided();
     }
 
     // destroy vehicle when it hits the top border
-    else if (pos().y() < 0){
+    else if (y < 0){
         selfDestruct();
+        simulation->statisticsPanel->incrementCollisionsAvoided();
     }
 
     // destroy vehicle when it hits the left border
-    else if (pos().x() < 0){
+    else if (x < 0){
         selfDestruct();
+        simulation->statisticsPanel->incrementCollisionsAvoided();
     }
 
     // destroy vehicle when it hits the right border
-    else if (pos().x() > 600){
+    else if (x > 600){
         selfDestruct();
+        simulation->statisticsPanel->incrementCollisionsAvoided();
     }
+
+}
+
+void Vehicle::changeSpeedOverInterval(double acceleration,int interval){
+    /*if(interval <= 100){
+        pps = pps-(acceleration/10);
+        return;
+    }
+    for(int i = 0; i < interval/100; i++){
+        pps = pps-(acceleration/10);
+        //QThread::msleep(100);
+    }*/
+
+    speed += acceleration;
+    if(speed < 80) speed = 80;
+    pps = speed/30;
+
 }
 
 void Vehicle::selfDestruct(){

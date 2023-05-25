@@ -8,21 +8,21 @@
 class SettingsPanel: public QObject,public QGraphicsRectItem{
     Q_OBJECT
 public:
-    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialTrafficLightsEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem * parent=NULL);
+    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem * parent=NULL);
     bool simulationStarted;
-    bool trafficLightsEnabled;
+    bool algorithmEnabled;
     bool soundEffectsEnabled;
     int vehiclesPerSec;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
     QGraphicsTextItem* vehiclesPerSecSetting;
     QGraphicsTextItem* soundEffectsSetting;
-    QGraphicsTextItem* trafficLightSetting;
+    QGraphicsTextItem* algorithmSetting;
     QGraphicsTextItem* speedRangeSetting;
 
 public slots:
     void toggle();
-    void toggleTrafficLights();
+    void toggleAlgorithm();
     void toggleSoundEffects();
     void incrementVehiclesPerSec();
     void decrementVehiclesPerSec();

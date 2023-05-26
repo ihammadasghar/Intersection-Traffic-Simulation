@@ -3,7 +3,7 @@
 #include <QBrush>
 #include <QFont>
 
-Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x, qreal y, QGraphicsItem *parent): QGraphicsRectItem(parent){
+Button::Button(QString name, QColor bgColor, int size, qreal width, qreal height, qreal x, qreal y, QGraphicsItem *parent): QGraphicsRectItem(parent){
     color = bgColor;
     color.setAlphaF(0.7);
 
@@ -16,11 +16,14 @@ Button::Button(QString name, QColor bgColor, qreal width, qreal height, qreal x,
 
     // draw the text
     QFont f;
-    f.setPointSize(22);
+    f.setPointSize(size);
 
     text = new QGraphicsTextItem(name,this);
-    int xPos = ((width - text->boundingRect().width())/2)-(22/2);
-    int yPos = ((height - text->boundingRect().height())/2)-(22/2);
+    //int xPos = ((width - text->boundingRect().width())/2)-(22/2);
+    //int yPos = ((height - text->boundingRect().height())/2)-(22/2);
+
+    int xPos = ((width - text->boundingRect().width())/2)-(size/2);
+    int yPos = ((height - text->boundingRect().height())/2)-(size/2);
     text->setPos(xPos,yPos);
     text->setFont(f);
     text->setDefaultTextColor(Qt::white);

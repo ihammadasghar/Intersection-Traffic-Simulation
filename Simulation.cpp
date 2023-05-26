@@ -115,7 +115,7 @@ void Simulation::drawGUI(){
     int settingsBtnH = 50;
     int settingsBtnX = screenWidth - (screenWidth/10);
     int settingsBtnY = (screenHeight/10) - settingsBtnH;
-    Button* settingsBtn = new Button(QString("⚙️"), Qt::blue, settingsBtnW, settingsBtnH,0, 0);
+    Button* settingsBtn = new Button(QString("⚙️"), Qt::blue,20, settingsBtnW, settingsBtnH,0, 0);
 
     settingsBtn->setPos(settingsBtnX, settingsBtnY);
     connect(settingsBtn,SIGNAL(clicked()),settingsPanel,SLOT(toggle()));
@@ -132,17 +132,36 @@ void Simulation::drawGUI(){
 
 
     // Start/Stop button in Bottom Panel
-    int playBtnX = bottomPanelX + bottomPanelW/30;
-    int playBtnY = screenHeight -(bottomPanelH/2);
-    int playBtnW = (bottomPanelW/6) + (btnPadding*2);
-    int playBtnH = (bottomPanelH/2) - (btnPadding*2);
+    int playBtnX = bottomPanelX + btnPadding;
+    int playBtnY = screenHeight -(bottomPanelH/1.5);
+    int playBtnW = (bottomPanelW/12) + (btnPadding*2);
+    int playBtnH = (bottomPanelH/3) - (btnPadding*2);
 
-    playButton = new Button(QString("Start "), Qt::darkGreen, playBtnW, playBtnH, 0, 0, bottomPanel);
+    playButton = new Button(QString("Start"), Qt::darkGreen,20, playBtnW, playBtnH, 0, 0, bottomPanel);
     playButton->setPos(playBtnX,playBtnY);
     connect(playButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
+    //End simulation button in Bottom Panel
+    int endSimBtnX = playBtnX + playBtnW+ btnPadding;
+    int endSimBtnY = playBtnY;
+    int endSimBtnW = (bottomPanelW/7) + (btnPadding*2);
+    int endSimBtnH = (bottomPanelH/3) - (btnPadding*2);
+
+    endSimButton = new Button(QString("Finish"), Qt::blue, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
+    endSimButton->setPos(endSimBtnX,endSimBtnY);
+    //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
+
+    //Resuls button in Bottom Panel
+    int resultsBtnX = playBtnX + btnPadding;
+    int resultsBtnY = playBtnY + playBtnH + btnPadding;
+    int resultsBtnW = playBtnW + endSimBtnW - btnPadding;
+    int resultsBtnH = (bottomPanelH/3) - (btnPadding*2);
+
+    resultsButton = new Button(QString("Results"), Qt::green, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
+    resultsButton->setPos(resultsBtnX,resultsBtnY);
+    //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
+
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
-    drawTrafficLights();
 
     scene->addItem(bottomPanel);
     drawTimer();
@@ -159,41 +178,11 @@ QGraphicsRectItem* Simulation::drawPanel(int x, int y, int width, int height, QC
     return panel;
 }
 
-void Simulation::drawTrafficLights(){
-    Button* trafficLight1;
-    Button* trafficLight2;
-    Button* trafficLight3;
-    Button* trafficLight4;
-
-    Button* trafficLightsList[4] = {trafficLight1, trafficLight2, trafficLight3, trafficLight4};
-
-    // create with loop and add location manually
-    for(int i=0; i<4;i++){
-    int trafficLightW = 25;
-    int trafficLightH = 25;
-    if(i%2 ==0){
-    trafficLightsList[i] = new Button(QString(""), Qt::green, trafficLightW, trafficLightH, 0, 0, bottomPanel);
-    }
-    else{
-        trafficLightsList[i] = new Button(QString(""), Qt::red, trafficLightW, trafficLightH, 0, 0, bottomPanel);
-    }
-    trafficLightsList[i]->setOpacity(1);
-    trafficLightsList[i]->setEnabled(false);
-}
-
-    //Green lights
-    trafficLightsList[0]->setPos(screenWidth -(screenWidth- screenWidth/3.5), screenWidth/4);
-    trafficLightsList[2]->setPos(screenWidth/1.53, screenWidth/1.4);
-
-    //Red lights
-    trafficLightsList[1]->setPos(screenWidth - screenWidth/3.2, screenWidth/3.3);
-    trafficLightsList[3]->setPos(screenWidth/4, screenWidth/1.53);
-}
 void Simulation::drawTimer(){
     QFont f;
     f.setPointSize(40);
 
-    int timerX = screenWidth/15;
+    int timerX = screenWidth/10;
     int timerY = screenWidth;
     displayTimer = new QGraphicsTextItem(QString::number(mm)+ QString(":")+ QString::number(ss), bottomPanel);
     displayTimer->setPos(timerX, timerY);

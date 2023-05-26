@@ -14,9 +14,9 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
     f.setPointSize(20);
 
     // this panel
-    int statisticsPanelX = 168;
+    int statisticsPanelX = 200;
     int statisticsPanelY = screenHeight - (screenHeight/4) +10;
-    int statisticsPanelW = screenWidth - 180;
+    int statisticsPanelW = screenWidth - 220;
     int statisticsPanelH = (screenHeight)/3 -80;
     setRect(statisticsPanelX,statisticsPanelY,statisticsPanelW,statisticsPanelH);
     QBrush brush;

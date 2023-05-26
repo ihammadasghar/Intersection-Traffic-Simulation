@@ -21,6 +21,8 @@ public:
     StatisticsPanel* statisticsPanel;
     bool isStarted;
     Button* playButton;
+    Button* resultsButton;
+    Button* endSimButton;
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void addSpawnOptions();
@@ -33,7 +35,6 @@ public:
 public slots:
     void startToggle();
     void addVehicle();
-    void drawTrafficLights();
     void drawTimer();
     void incrementTimer();
     void resetTimer();

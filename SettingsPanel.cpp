@@ -3,9 +3,9 @@
 
 extern Simulation * simulation;
 
-SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
     algorithmEnabled = initialAlgorithmEnabled;
-    soundEffectsEnabled = initialSoundEffectsEnabled;
+    vehicleDetailsEnabled = initialVehicleDetailsEnabled;
     vehiclesPerSec = initialVehiclesPerSec;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
     speedRangeUpperBound = initialSpeedRangeUpperBound;
@@ -45,22 +45,22 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     algorithmBtn->setPos(algorithmBtnX, algorithmBtnY);
     connect(algorithmBtn,SIGNAL(clicked()),this,SLOT(toggleAlgorithm()));
 
-    // Sound Effects Setting
+    // Vehicle Details Setting
     settingY += settingsPanelH/5;
 
-    soundEffectsSetting = new QGraphicsTextItem(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"), this);
-    soundEffectsSetting->setPos(settingX, settingY);
-    soundEffectsSetting->setFont(f);
-    soundEffectsSetting->setDefaultTextColor(Qt::white);
+    vehicleDetailsSetting = new QGraphicsTextItem(QString("Vehicle Details: ") + QString(vehicleDetailsEnabled ? "On" : "Off"), this);
+    vehicleDetailsSetting->setPos(settingX, settingY);
+    vehicleDetailsSetting->setFont(f);
+    vehicleDetailsSetting->setDefaultTextColor(Qt::white);
 
 
-    int soundEffectsBtnW = (settingsPanelW/2) - (btnPadding*2);
-    int soundEffectsBtnH = (settingsPanelH/5) - (btnPadding*2);
-    int soundEffectsBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
-    int soundEffectsBtnY = settingY;
-    Button* soundEffectsBtn = new Button(QString("O/I"), Qt::green,20, soundEffectsBtnW, soundEffectsBtnH, 0, 0, this);
-    soundEffectsBtn->setPos(soundEffectsBtnX, soundEffectsBtnY);
-    connect(soundEffectsBtn,SIGNAL(clicked()),this,SLOT(toggleSoundEffects()));
+    int vehicleDetailsBtnW = (settingsPanelW/2) - (btnPadding*2);
+    int vehicleDetailsBtnH = (settingsPanelH/5) - (btnPadding*2);
+    int vehicleDetailsBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    int vehicleDetailsBtnY = settingY;
+    Button* vehicleDetailsBtn = new Button(QString("O/I"), Qt::green,20, vehicleDetailsBtnW, vehicleDetailsBtnH, 0, 0, this);
+    vehicleDetailsBtn->setPos(vehicleDetailsBtnX, vehicleDetailsBtnY);
+    connect(vehicleDetailsBtn,SIGNAL(clicked()),this,SLOT(toggleVehicleDetails()));
 
     // Units of Time setting
     settingY += settingsPanelH/5;
@@ -155,9 +155,9 @@ void SettingsPanel::toggleAlgorithm(){
     algorithmSetting->setPlainText(QString("Algorithm: ") + QString(algorithmEnabled ? "On" : "Off"));
 }
 
-void SettingsPanel::toggleSoundEffects(){
-    soundEffectsEnabled = !soundEffectsEnabled;
-    soundEffectsSetting->setPlainText(QString("Sound Effects: ") + QString(soundEffectsEnabled ? "On" : "Off"));
+void SettingsPanel::toggleVehicleDetails(){
+    vehicleDetailsEnabled = !vehicleDetailsEnabled;
+    vehicleDetailsSetting->setPlainText(QString("Vehicle Details: ") + QString(vehicleDetailsEnabled ? "On" : "Off"));
 }
 
 void SettingsPanel::incrementVehiclesPerSec(){

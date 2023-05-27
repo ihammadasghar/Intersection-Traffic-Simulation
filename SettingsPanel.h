@@ -9,23 +9,23 @@
 class SettingsPanel: public QObject,public QGraphicsRectItem{
     Q_OBJECT
 public:
-    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem * parent=NULL);
+    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem * parent=NULL);
     bool simulationStarted;
     bool algorithmEnabled;
-    bool soundEffectsEnabled;
+    bool vehicleDetailsEnabled;
     int vehiclesPerSec;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
     Algorithm* alogrithm;
     QGraphicsTextItem* vehiclesPerSecSetting;
-    QGraphicsTextItem* soundEffectsSetting;
+    QGraphicsTextItem* vehicleDetailsSetting;
     QGraphicsTextItem* algorithmSetting;
     QGraphicsTextItem* speedRangeSetting;
 
 public slots:
     void toggle();
     void toggleAlgorithm();
-    void toggleSoundEffects();
+    void toggleVehicleDetails();
     void incrementVehiclesPerSec();
     void decrementVehiclesPerSec();
     void incrementSpeedRangeLowerBound();

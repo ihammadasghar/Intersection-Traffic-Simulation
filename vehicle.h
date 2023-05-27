@@ -20,6 +20,7 @@ public:
     int speed;
     SpawnOption* spawnOption;
     QGraphicsTextItem* detailsText;
+    QTimer* movementTimer;
     void updateDetails();
     void changeSpeed(double acceleration);
 

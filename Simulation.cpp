@@ -15,6 +15,7 @@ static constexpr int initialSpeedRangeUpperBound = 100;
 static constexpr int vehiclesPerSec = 2;
 static constexpr int trafficLightsEnabled = false;
 static constexpr int soundEffectsEnabled = true;
+Algorithm* algorithm = new Algorithm("intersecting lines");
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
@@ -48,16 +49,16 @@ Simulation::Simulation(QWidget *parent){
 
     // Initial Settings
     isStarted = false;
-    mm= ss= 0;
+    seconds = 0;
 
-    drawGUI();
+    // Setup Timers
+    vehicleSpawnTimer = new QTimer(this);
+    connect(vehicleSpawnTimer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     
     timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
-    algorithm = new Algorithm("intersecting lines");
-    algorithm->run();
 
+    drawGUI();
     show();
 }
 
@@ -65,14 +66,23 @@ void Simulation::startToggle(){
     isStarted = !isStarted;
     if(isStarted){
         playButton->setText("Stop");
-        playButton->setColor(Qt::red);
-        timer->start(1000/(settingsPanel->vehiclesPerSec));
+        playButton->setColor(Qt::blue);
+        vehicleSpawnTimer->start(1000/(settingsPanel->vehiclesPerSec));
+        timer->start(1000);
+
+        // Enable movement
+        foreach(Vehicle* v, aliveVehicles){
+            v->movementTimer->start(33);
+        }
+
     }else{
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
+        vehicleSpawnTimer->stop();
         timer->stop();
     }
 }
+
 
 void Simulation::destroyAllVehicles(){
     foreach(Vehicle* v, aliveVehicles){
@@ -86,8 +96,6 @@ bool Simulation::destroyCollidingVehicles(Vehicle* car){
         Vehicle * item= dynamic_cast<Vehicle *>(i);
         if (item)
         {
-            //aliveVehicles.removeOne(item);
-            //aliveVehicles.removeOne(car);
             item->selfDestruct();
             statisticsPanel->incrementCollisions();
             return true;
@@ -112,7 +120,7 @@ void Simulation::addVehicle(){
 
 void Simulation::drawGUI(){
     // Settings panel
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound, algorithm);
     scene->addItem(settingsPanel);
 
     int settingsBtnW = 50;
@@ -151,7 +159,7 @@ void Simulation::drawGUI(){
     int endSimBtnW = (bottomPanelW/7) + (btnPadding*2);
     int endSimBtnH = (bottomPanelH/3) - (btnPadding*2);
 
-    endSimButton = new Button(QString("Finish"), Qt::blue, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
+    endSimButton = new Button(QString("Finish"), Qt::red, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
     endSimButton->setPos(endSimBtnX,endSimBtnY);
     //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
@@ -188,23 +196,24 @@ void Simulation::drawTimer(){
 
     int timerX = screenWidth/10;
     int timerY = screenWidth;
-    displayTimer = new QGraphicsTextItem(QString::number(mm)+ QString(":")+ QString::number(ss), bottomPanel);
+    displayTimer = new QGraphicsTextItem("00:00", bottomPanel);
     displayTimer->setPos(timerX, timerY);
     displayTimer->setFont(f);
     displayTimer->setDefaultTextColor(Qt::white);
 }
 
 void Simulation::incrementTimer(){
-    ss++;
-    if(ss == 60){
-        mm++;
-        ss = 0;
-    }
-    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+    seconds++;
+
+    int ss = seconds%60;
+    int mm = seconds/60;
+    QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
+    QString seconds = ss < 10 ? "0" + QString::number(ss) : QString::number(ss);
+    displayTimer->setPlainText(minutes + ":" + seconds);
 }
 
 void Simulation::resetTimer(){
     timer->stop();
-    mm= ss= 0;
-    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+    seconds= 0;
+    displayTimer->setPlainText("00:00");
 }

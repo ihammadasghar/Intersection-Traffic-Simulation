@@ -60,7 +60,6 @@ void Algorithm::intersectingLines(){
             double c2 = a2*(CFIRST)+ b2*(CSECOND);
 
             double determinant = a1*b2 - a2*b1;
-            //if((int)determinant == 0) continue;
 
             // possible collision cordinates
             double x = (b2*c1 - b1*c2)/determinant;
@@ -69,8 +68,6 @@ void Algorithm::intersectingLines(){
             // distances to collision
             float car1ToCollision = getDistance(car1->x, car1->y, x, y);
             float car2ToCollision = getDistance(car2->x, car2->y, x, y);
-
-            if(abs(car1ToCollision/(car1->speed) - car2ToCollision/(car2->speed)) > 2) continue;
 
             if(car1ToCollision <= car2ToCollision){
                 // speed up car 1 and slow down car 2 to avoid collision

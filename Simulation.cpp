@@ -13,9 +13,8 @@ static constexpr int btnPadding = 10;
 static constexpr int initialSpeedRangeLowerBound = 80;
 static constexpr int initialSpeedRangeUpperBound = 100;
 static constexpr int vehiclesPerSec = 2;
-static constexpr int trafficLightsEnabled = false;
+static constexpr int algorithmEnabled = false;
 static constexpr int soundEffectsEnabled = true;
-Algorithm* algorithm = new Algorithm("intersecting lines");
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
@@ -50,6 +49,7 @@ Simulation::Simulation(QWidget *parent){
     // Initial Settings
     isStarted = false;
     seconds = 0;
+    algorithm = new Algorithm("intersecting lines");
 
     // Setup Timers
     vehicleSpawnTimer = new QTimer(this);
@@ -74,6 +74,9 @@ void Simulation::startToggle(){
         foreach(Vehicle* v, aliveVehicles){
             v->movementTimer->start(33);
         }
+
+        // Run anti collision algorithm
+        if(settingsPanel->algorithmEnabled) algorithm->run();
 
     }else{
         playButton->setText("Start");
@@ -120,7 +123,7 @@ void Simulation::addVehicle(){
 
 void Simulation::drawGUI(){
     // Settings panel
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound, algorithm);
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, algorithmEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
     scene->addItem(settingsPanel);
 
     int settingsBtnW = 50;
@@ -138,7 +141,7 @@ void Simulation::drawGUI(){
     int bottomPanelY = screenHeight - (screenHeight/4);
     int bottomPanelW = screenWidth;
     int bottomPanelH = screenHeight/4;
-    bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
+    bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::black, 1);
 
     bottomPanel->setZValue(1);
 
@@ -169,7 +172,7 @@ void Simulation::drawGUI(){
     int resultsBtnW = playBtnW + endSimBtnW - btnPadding;
     int resultsBtnH = (bottomPanelH/3) - (btnPadding*2);
 
-    resultsButton = new Button(QString("Results"), Qt::green, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
+    resultsButton = new Button(QString("Results"), Qt::yellow, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
     resultsButton->setPos(resultsBtnX,resultsBtnY);
     //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
@@ -194,7 +197,7 @@ void Simulation::drawTimer(){
     QFont f;
     f.setPointSize(40);
 
-    int timerX = screenWidth/10;
+    int timerX = 4*btnPadding;
     int timerY = screenWidth;
     displayTimer = new QGraphicsTextItem("00:00", bottomPanel);
     displayTimer->setPos(timerX, timerY);

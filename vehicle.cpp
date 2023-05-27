@@ -18,7 +18,8 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     x = spawnOption->initialX;
     y = spawnOption->initialY;
     this->spawnOption = spawnOption;
-    setRotation((spawnOption->initialRotation) * 180/3.1415);
+    rotationAngle = (spawnOption->initialRotation)*3.1415/180;
+    setRotation((spawnOption->initialRotation));
     setPos(x,y);
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
@@ -49,17 +50,9 @@ void Vehicle::move(){
     if(!(simulation->isStarted)) return;
 
     // detect collisions
-    QList<QGraphicsItem *> list = scene()->collidingItems(this);
-    if(!(list.isEmpty())){
-        simulation->destroyCollidingVehicles(list);
-        foreach(QGraphicsItem * i , list){
-            Vehicle * item= dynamic_cast<Vehicle *>(i);
-            if (item)
-            {
-                selfDestruct();
-                return;
-            }
-        }
+    if(simulation->destroyCollidingVehicles(this)) {
+        selfDestruct();
+        return;
     }
 
     auto leftTurn = [](float a, float p1, float h, int fx) {return -a/pow(fx-p1, 2);};
@@ -78,9 +71,8 @@ void Vehicle::move(){
     fx += changeInX;
     fy += changeInY;
 
-    float rotation = (float)(spawnOption->initialRotation) * 180/3.1415;
-    rotationAngle = (rotation + angle)*180/3.1415;
-    setRotation(rotationAngle);
+    rotationAngle = ((float)(spawnOption->initialRotation)*3.1415/180) + angle;
+    setRotation(rotationAngle*180/3.1415);
 
     if(spawnOption->initialDirection == "right"){
         x = spawnOption->initialX + (int)fx;
@@ -128,18 +120,15 @@ void Vehicle::move(){
 
 }
 
-void Vehicle::changeSpeedOverInterval(double acceleration,int interval){
-    /*if(interval <= 100){
-        pps = pps-(acceleration/10);
-        return;
+void Vehicle::changeSpeed(double acceleration){
+    int newSpeed = speed + acceleration;
+    if(newSpeed < 80){
+        speed = 80;
+    }else if(newSpeed > 130) {
+        speed = 130;
+    }else{
+        speed = newSpeed;
     }
-    for(int i = 0; i < interval/100; i++){
-        pps = pps-(acceleration/10);
-        //QThread::msleep(100);
-    }*/
-
-    speed += acceleration;
-    if(speed < 80) speed = 80;
     pps = speed/30;
 
 }

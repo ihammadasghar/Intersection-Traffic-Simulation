@@ -12,7 +12,7 @@ static constexpr int vehicleCount = 1;
 static constexpr int btnPadding = 10;
 static constexpr int initialSpeedRangeLowerBound = 80;
 static constexpr int initialSpeedRangeUpperBound = 100;
-static constexpr int vehiclesPerSec = 1;
+static constexpr int vehiclesPerSec = 2;
 static constexpr int trafficLightsEnabled = false;
 static constexpr int soundEffectsEnabled = true;
 SpawnOption* spawnOptions[16] = {
@@ -20,18 +20,18 @@ SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,340,0,"right","right"),
     new SpawnOption(600,260,180,"left","right"),
     new SpawnOption(600,290,180,"left","left"),
-    new SpawnOption(260,0,270,"down","right"),
-    new SpawnOption(290,0,270,"down","left"),
-    new SpawnOption(310,550,90,"up","left"),
-    new SpawnOption(340,550,90,"up","right"),
+    new SpawnOption(260,0,90,"down","right"),
+    new SpawnOption(290,0,90,"down","left"),
+    new SpawnOption(310,550,270,"up","left"),
+    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
     new SpawnOption(600,260,180,"left","straight"),
     new SpawnOption(600,290,180,"left","straight"),
-    new SpawnOption(260,0,270,"down","straight"),
-    new SpawnOption(290,0,270,"down","straight"),
-    new SpawnOption(310,550,90,"up","straight"),
-    new SpawnOption(340,550,90,"up","straight")
+    new SpawnOption(260,0,90,"down","straight"),
+    new SpawnOption(290,0,90,"down","straight"),
+    new SpawnOption(310,550,270,"up","straight"),
+    new SpawnOption(340,550,270,"up","straight")
 };
 
 Simulation::Simulation(QWidget *parent){
@@ -55,8 +55,8 @@ Simulation::Simulation(QWidget *parent){
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
-    Algorithm* a = new Algorithm("intersecting lines");
-    a->run();
+    algorithm = new Algorithm("intersecting lines");
+    algorithm->run();
 
     show();
 }
@@ -80,17 +80,21 @@ void Simulation::destroyAllVehicles(){
     }
 }
 
-void Simulation::destroyCollidingVehicles(QList<QGraphicsItem *> list){
-
+bool Simulation::destroyCollidingVehicles(Vehicle* car){
+    QList<QGraphicsItem *> list = scene->collidingItems(car);
     foreach(QGraphicsItem* i, list){
         Vehicle * item= dynamic_cast<Vehicle *>(i);
         if (item)
         {
+            //aliveVehicles.removeOne(item);
+            //aliveVehicles.removeOne(car);
             item->selfDestruct();
             statisticsPanel->incrementCollisions();
+            return true;
         }
 
     }
+    return false;
 }
 
 void Simulation::decrementCarsOnScreen(){

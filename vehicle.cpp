@@ -28,26 +28,29 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     pps = speed/30; // Pixels Per Sec
 
     QFont f;
-    f.setPointSize(12);
-    detailsText = new QGraphicsTextItem("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed), this);
+    f.setPointSize(10);
+    detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH", this);
     detailsText->setPos(0, 20);
     detailsText->setFont(f);
     detailsText->setDefaultTextColor(Qt::yellow);
 
-    QTimer * timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(move()));
+    movementTimer = new QTimer(this);
+    connect(movementTimer,SIGNAL(timeout()),this,SLOT(move()));
 
     // start the timer 33 msec for 30 FPS
-    timer->start(33);
+    movementTimer->start(33);
 }
 
 void Vehicle::updateDetails(){
-    detailsText->setPlainText("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed));
+    detailsText->setPlainText("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH");
 }
 
 void Vehicle::move(){
     // check if simulation is paused
-    if(!(simulation->isStarted)) return;
+    if(!(simulation->isStarted)){
+        movementTimer->stop();
+        return;
+    }
 
     // detect collisions
     if(simulation->destroyCollidingVehicles(this)) {
@@ -134,7 +137,7 @@ void Vehicle::changeSpeed(double acceleration){
 }
 
 void Vehicle::selfDestruct(){
-    simulation->decrementCarsOnScreen();
+    simulation->statisticsPanel->decrementCarsOnScreen();
     simulation->aliveVehicles.removeOne(this);
     scene()->removeItem(this);
     delete this;

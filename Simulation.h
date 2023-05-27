@@ -9,6 +9,7 @@
 #include "StatisticsPanel.h"
 #include "SpawnOption.h"
 #include "vehicle.h"
+#include "Algorithm.h"
 
 class Simulation: public QGraphicsView{
     Q_OBJECT
@@ -24,11 +25,12 @@ public:
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);
     void addSpawnOptions();
-    void destroyCollidingVehicles(QList<QGraphicsItem *> list);
+    bool destroyCollidingVehicles(Vehicle* car);
     void destroyAllVehicles();
     int mm,ss;
     QGraphicsTextItem* displayTimer;
     QList<Vehicle*> aliveVehicles;
+    Algorithm* algorithm;
 
 public slots:
     void startToggle();

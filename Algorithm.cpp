@@ -19,7 +19,7 @@ void Algorithm::intersectingLines(){
 
     float maxDistance = 800; // max distance between two cars to avoid possible collision
     float lineLength = 600;
-    double accelerationPerSec = 5;
+    double accelerationPerSec = 10;
 
     QList<Vehicle*> cars = simulation->aliveVehicles;
     Vehicle* car1;
@@ -36,28 +36,17 @@ void Algorithm::intersectingLines(){
             // check distance
             if(distance>maxDistance) continue;
 
-            // ignore uncollidable directions
-            //if(car1->spawnOption->initialDirection != car2->spawnOption->initialDirection &&
-            //    car1->spawnOption->turnDirection != car2->spawnOption->turnDirection
-            //    ) continue;
-
-            // calculate slopes
-            float m1 = atan(car1->rotationAngle);
-            float m2 = atan(car2->rotationAngle);
-
-            //if(m1 == m2) continue; // lines are parallel
-
             // starting points of the lines
-            double AFIRST = car1->x;
-            double ASECOND = car1->y;
-            double BFIRST = car2->x;
-            double BSECOND = car2->y;
+            double AFIRST = ((lineLength/2) * cos((car1->rotationAngle)+3.1415)) + car1->x;
+            double ASECOND = ((lineLength/2) * sin(car1->rotationAngle)+3.1415) + car1->y;
+            double CFIRST = ((lineLength/2) * cos(car2->rotationAngle)+3.1415) + car2->x;
+            double CSECOND = ((lineLength/2) * sin(car2->rotationAngle)+3.1415) + car2->y;
 
             // ending points of the lines
-            double CFIRST = (lineLength * cos(car1->rotationAngle));
-            double CSECOND = (lineLength * sin(car1->rotationAngle));
-            double DFIRST = (lineLength * cos(car2->rotationAngle));
-            double DSECOND = (lineLength * sin(car2->rotationAngle));
+            double BFIRST = ((lineLength/2) * cos(car1->rotationAngle)) + car1->x;
+            double BSECOND = ((lineLength/2) * sin(car1->rotationAngle)) + car1->y;
+            double DFIRST = ((lineLength/2) * cos(car2->rotationAngle)) + car2->x;
+            double DSECOND = ((lineLength/2) * sin(car2->rotationAngle)) + car2->y;
 
             // ending points of the lines
             // Line AB represented as a1x + b1y = c1
@@ -71,6 +60,7 @@ void Algorithm::intersectingLines(){
             double c2 = a2*(CFIRST)+ b2*(CSECOND);
 
             double determinant = a1*b2 - a2*b1;
+            //if((int)determinant == 0) continue;
 
             // possible collision cordinates
             double x = (b2*c1 - b1*c2)/determinant;
@@ -80,15 +70,17 @@ void Algorithm::intersectingLines(){
             float car1ToCollision = getDistance(car1->x, car1->y, x, y);
             float car2ToCollision = getDistance(car2->x, car2->y, x, y);
 
+            if(abs(car1ToCollision/(car1->speed) - car2ToCollision/(car2->speed)) > 2) continue;
+
             if(car1ToCollision <= car2ToCollision){
                 // speed up car 1 and slow down car 2 to avoid collision
-                car1->changeSpeedOverInterval(accelerationPerSec, ((car1ToCollision*1000)/car1->pps));
-                car2->changeSpeedOverInterval(-accelerationPerSec/4, ((car2ToCollision*1000)/car2->pps));
+                car1->changeSpeed(accelerationPerSec);
+                car2->changeSpeed(-accelerationPerSec/2);
             }
             else {
                 // speed up car 2 and slow down car 1 to avoid collision
-                car2->changeSpeedOverInterval(accelerationPerSec, ((car2ToCollision*1000)/car2->pps));
-                car1->changeSpeedOverInterval(-accelerationPerSec/4, ((car1ToCollision*1000)/car1->pps));
+                car2->changeSpeed(accelerationPerSec);
+                car1->changeSpeed(-accelerationPerSec/2);
             }
 
 

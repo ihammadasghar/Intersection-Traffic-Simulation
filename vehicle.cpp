@@ -13,6 +13,7 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
+    detailsText = NULL;
     fx = 0;
     fy = 0;
     x = spawnOption->initialX;
@@ -27,13 +28,6 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     speed = (rand() % (speedRangeUpperBound - speedRangeLowerBound)) + speedRangeLowerBound;
     pps = speed/30; // Pixels Per Sec
 
-    QFont f;
-    f.setPointSize(10);
-    detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH", this);
-    detailsText->setPos(0, 20);
-    detailsText->setFont(f);
-    detailsText->setDefaultTextColor(Qt::yellow);
-
     movementTimer = new QTimer(this);
     connect(movementTimer,SIGNAL(timeout()),this,SLOT(move()));
 
@@ -42,6 +36,21 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
 }
 
 void Vehicle::updateDetails(){
+    if(!(simulation->settingsPanel->vehicleDetailsEnabled)) {
+        if(detailsText){
+            detailsText->setVisible(false);
+            detailsText = NULL;
+        }
+        return;
+    }
+    if(detailsText==NULL){
+        QFont f;
+        f.setPointSize(10);
+        detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH", this);
+        detailsText->setPos(0, 20);
+        detailsText->setFont(f);
+        detailsText->setDefaultTextColor(Qt::yellow);
+    }
     detailsText->setPlainText("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH");
 }
 

@@ -9,14 +9,14 @@
 class SettingsPanel: public QObject,public QGraphicsRectItem{
     Q_OBJECT
 public:
-    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem * parent=NULL);
+    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem * parent=NULL);
     bool simulationStarted;
     bool algorithmEnabled;
     bool soundEffectsEnabled;
     int vehiclesPerSec;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
-    Algorithm* alogrithm;
+
     QGraphicsTextItem* vehiclesPerSecSetting;
     QGraphicsTextItem* soundEffectsSetting;
     QGraphicsTextItem* algorithmSetting;

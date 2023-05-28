@@ -38,6 +38,8 @@ public:
     Button* resultsButton;
     Button* endSimButton;
 
+    Algorithm* algorithm;
+
     //functions
     void decrementCarsOnScreen();
     QGraphicsRectItem* drawPanel(int x, int y, int width, int height, QColor color, double opacity);

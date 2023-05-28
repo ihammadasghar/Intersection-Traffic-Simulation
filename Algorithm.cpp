@@ -1,21 +1,20 @@
 #include "Algorithm.h"
 #include "Simulation.h"
-#include <QTimer>
 
 extern Simulation * simulation;
 
 Algorithm::Algorithm(QString name): QObject(){
     this->name = name;
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(intersectingLines()));
 }
 
 void Algorithm::run(){
-    QTimer * timer2 = new QTimer(this);
-    connect(timer2,SIGNAL(timeout()),this,SLOT(intersectingLines()));
-    timer2->start(33);
+    timer->start(33);
 }
 
 void Algorithm::intersectingLines(){
-    if(!(simulation->isStarted)) return;
+    if(!(simulation->isStarted)) timer->stop();;
 
     float maxDistance = 800; // max distance between two cars to avoid possible collision
     float lineLength = 600;
@@ -24,7 +23,6 @@ void Algorithm::intersectingLines(){
     QList<Vehicle*> cars = simulation->aliveVehicles;
     Vehicle* car1;
     Vehicle* car2;
-
 
     for(int i = 0; i < cars.length(); i++){
         car1 = cars[i];

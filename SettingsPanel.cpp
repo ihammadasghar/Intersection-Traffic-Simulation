@@ -3,13 +3,12 @@
 
 extern Simulation * simulation;
 
-SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, Algorithm* algorithm, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
     algorithmEnabled = initialAlgorithmEnabled;
     vehicleDetailsEnabled = initialVehicleDetailsEnabled;
     vehiclesPerSec = initialVehiclesPerSec;
     speedRangeLowerBound = initialSpeedRangeLowerBound;
     speedRangeUpperBound = initialSpeedRangeUpperBound;
-    this->alogrithm = algorithm;
 
     // this panel
     int settingsPanelX = screenWidth/10;
@@ -32,7 +31,7 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     int settingY = settingsPanelY + btnPadding;
 
     // Algorithm Toggle
-    algorithmSetting = new QGraphicsTextItem(QString("Algorithm: On"), this);
+    algorithmSetting = new QGraphicsTextItem(QString("Algorithm: "+ QString(algorithmEnabled ? "On" : "Off")), this);
     algorithmSetting->setPos(settingX, settingY);
     algorithmSetting->setFont(f);
     algorithmSetting->setDefaultTextColor(Qt::white);
@@ -152,6 +151,7 @@ void SettingsPanel::restart(){
 
 void SettingsPanel::toggleAlgorithm(){
     algorithmEnabled = !algorithmEnabled;
+    if(algorithmEnabled) simulation->algorithm->run();
     algorithmSetting->setPlainText(QString("Algorithm: ") + QString(algorithmEnabled ? "On" : "Off"));
 }
 

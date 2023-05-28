@@ -214,6 +214,9 @@ void Simulation::incrementTimer(){
     QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
     QString seconds = ss < 10 ? "0" + QString::number(ss) : QString::number(ss);
     displayTimer->setPlainText(minutes + ":" + seconds);
+
+    // NOTE: should finish the simulation and open records panel in the future
+    if(mm==settingsPanel->timerLimit) startToggle();
 }
 
 void Simulation::resetTimer(){

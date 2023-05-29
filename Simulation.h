@@ -8,6 +8,7 @@
 #include "SettingsPanel.h"
 #include "StatisticsPanel.h"
 #include "SpawnOption.h"
+#include "Results.h"
 #include "vehicle.h"
 
 class Simulation: public QGraphicsView{
@@ -19,6 +20,8 @@ public:
     QTimer* timer;
     SettingsPanel* settingsPanel;
     StatisticsPanel* statisticsPanel;
+    Results* results;
+
     bool isStarted;
     Button* playButton;
     Button* resultsButton;

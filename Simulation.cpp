@@ -15,6 +15,7 @@ static constexpr int initialSpeedRangeUpperBound = 100;
 static constexpr int vehiclesPerSec = 1;
 static constexpr int trafficLightsEnabled = false;
 static constexpr int soundEffectsEnabled = true;
+
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
@@ -151,6 +152,10 @@ void Simulation::drawGUI(){
     endSimButton->setPos(endSimBtnX,endSimBtnY);
     //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
+    results = new Results(screenWidth, screenHeight, btnPadding);
+    scene->addItem(results);
+    results->setVisible(false);
+
     //Resuls button in Bottom Panel
     int resultsBtnX = playBtnX + btnPadding;
     int resultsBtnY = playBtnY + playBtnH + btnPadding;
@@ -159,7 +164,7 @@ void Simulation::drawGUI(){
 
     resultsButton = new Button(QString("Results"), Qt::green, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
     resultsButton->setPos(resultsBtnX,resultsBtnY);
-    //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
+    connect(resultsButton,SIGNAL(clicked()),results,SLOT(resultsPanel()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
 

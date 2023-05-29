@@ -4,28 +4,34 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QGraphicsItem>
+#include "Algorithm.h"
 
 class SettingsPanel: public QObject,public QGraphicsRectItem{
     Q_OBJECT
 public:
-    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialSoundEffectsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, QGraphicsItem * parent=NULL);
+    SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, int initialTimerLimit, QGraphicsItem * parent=NULL);
     bool simulationStarted;
     bool algorithmEnabled;
-    bool soundEffectsEnabled;
+    bool vehicleDetailsEnabled;
     int vehiclesPerSec;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
+    int timerLimit;
+
     QGraphicsTextItem* vehiclesPerSecSetting;
-    QGraphicsTextItem* soundEffectsSetting;
+    QGraphicsTextItem* vehicleDetailsSetting;
     QGraphicsTextItem* algorithmSetting;
     QGraphicsTextItem* speedRangeSetting;
+    QGraphicsTextItem* timerLimitSetting;
 
 public slots:
     void toggle();
     void toggleAlgorithm();
-    void toggleSoundEffects();
+    void toggleVehicleDetails();
     void incrementVehiclesPerSec();
     void decrementVehiclesPerSec();
+    void incrementTimerLimit();
+    void decrementTimerLimit();
     void incrementSpeedRangeLowerBound();
     void decrementSpeedRangeLowerBound();
     void incrementSpeedRangeUpperBound();

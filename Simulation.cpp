@@ -12,27 +12,27 @@ static constexpr int vehicleCount = 1;
 static constexpr int btnPadding = 10;
 static constexpr int initialSpeedRangeLowerBound = 80;
 static constexpr int initialSpeedRangeUpperBound = 100;
-static constexpr int vehiclesPerSec = 1;
-static constexpr int trafficLightsEnabled = false;
+static constexpr int vehiclesPerSec = 2;
+static constexpr int algorithmEnabled = false;
 static constexpr int soundEffectsEnabled = true;
-
+static constexpr int timerLimit = 2;
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
     new SpawnOption(600,260,180,"left","right"),
     new SpawnOption(600,290,180,"left","left"),
-    new SpawnOption(260,0,270,"down","right"),
-    new SpawnOption(290,0,270,"down","left"),
-    new SpawnOption(310,550,90,"up","left"),
-    new SpawnOption(340,550,90,"up","right"),
+    new SpawnOption(260,0,90,"down","right"),
+    new SpawnOption(290,0,90,"down","left"),
+    new SpawnOption(310,550,270,"up","left"),
+    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
     new SpawnOption(600,260,180,"left","straight"),
     new SpawnOption(600,290,180,"left","straight"),
-    new SpawnOption(260,0,270,"down","straight"),
-    new SpawnOption(290,0,270,"down","straight"),
-    new SpawnOption(310,550,90,"up","straight"),
-    new SpawnOption(340,550,90,"up","straight")
+    new SpawnOption(260,0,90,"down","straight"),
+    new SpawnOption(290,0,90,"down","straight"),
+    new SpawnOption(310,550,270,"up","straight"),
+    new SpawnOption(340,550,270,"up","straight")
 };
 
 Simulation::Simulation(QWidget *parent){
@@ -49,16 +49,17 @@ Simulation::Simulation(QWidget *parent){
 
     // Initial Settings
     isStarted = false;
-    mm= ss= 0;
+    seconds = 0;
+    algorithm = new Algorithm("intersecting lines");
 
-    drawGUI();
+    // Setup Timers
+    vehicleSpawnTimer = new QTimer(this);
+    connect(vehicleSpawnTimer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     
     timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(addVehicle()));
     connect(timer,SIGNAL(timeout()),this,SLOT(incrementTimer()));
-    Algorithm* a = new Algorithm("intersecting lines");
-    a->run();
 
+    drawGUI();
     show();
 }
 
@@ -66,14 +67,26 @@ void Simulation::startToggle(){
     isStarted = !isStarted;
     if(isStarted){
         playButton->setText("Stop");
-        playButton->setColor(Qt::red);
-        timer->start(1000/(settingsPanel->vehiclesPerSec));
+        playButton->setColor(Qt::blue);
+        vehicleSpawnTimer->start(1000/(settingsPanel->vehiclesPerSec));
+        timer->start(1000);
+
+        // Enable movement
+        foreach(Vehicle* v, aliveVehicles){
+            v->movementTimer->start(33);
+        }
+
+        // Run anti collision algorithm
+        if(settingsPanel->algorithmEnabled) algorithm->run();
+
     }else{
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
+        vehicleSpawnTimer->stop();
         timer->stop();
     }
 }
+
 
 void Simulation::destroyAllVehicles(){
     foreach(Vehicle* v, aliveVehicles){
@@ -81,17 +94,19 @@ void Simulation::destroyAllVehicles(){
     }
 }
 
-void Simulation::destroyCollidingVehicles(QList<QGraphicsItem *> list){
-
+bool Simulation::destroyCollidingVehicles(Vehicle* car){
+    QList<QGraphicsItem *> list = scene->collidingItems(car);
     foreach(QGraphicsItem* i, list){
         Vehicle * item= dynamic_cast<Vehicle *>(i);
         if (item)
         {
             item->selfDestruct();
             statisticsPanel->incrementCollisions();
+            return true;
         }
 
     }
+    return false;
 }
 
 void Simulation::decrementCarsOnScreen(){
@@ -109,7 +124,7 @@ void Simulation::addVehicle(){
 
 void Simulation::drawGUI(){
     // Settings panel
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, trafficLightsEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, algorithmEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound, timerLimit);
     scene->addItem(settingsPanel);
 
     int settingsBtnW = 50;
@@ -127,7 +142,7 @@ void Simulation::drawGUI(){
     int bottomPanelY = screenHeight - (screenHeight/4);
     int bottomPanelW = screenWidth;
     int bottomPanelH = screenHeight/4;
-    bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::darkGray, 1);
+    bottomPanel = drawPanel(bottomPanelX, bottomPanelY, bottomPanelW, bottomPanelH, Qt::black, 1);
 
     bottomPanel->setZValue(1);
 
@@ -148,7 +163,7 @@ void Simulation::drawGUI(){
     int endSimBtnW = (bottomPanelW/7) + (btnPadding*2);
     int endSimBtnH = (bottomPanelH/3) - (btnPadding*2);
 
-    endSimButton = new Button(QString("Finish"), Qt::blue, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
+    endSimButton = new Button(QString("Finish"), Qt::red, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
     endSimButton->setPos(endSimBtnX,endSimBtnY);
     //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
@@ -162,7 +177,7 @@ void Simulation::drawGUI(){
     int resultsBtnW = playBtnW + endSimBtnW - btnPadding;
     int resultsBtnH = (bottomPanelH/3) - (btnPadding*2);
 
-    resultsButton = new Button(QString("Results"), Qt::green, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
+    resultsButton = new Button(QString("Results"), Qt::yellow, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
     resultsButton->setPos(resultsBtnX,resultsBtnY);
     connect(resultsButton,SIGNAL(clicked()),results,SLOT(resultsPanel()));
 
@@ -187,25 +202,29 @@ void Simulation::drawTimer(){
     QFont f;
     f.setPointSize(40);
 
-    int timerX = screenWidth/10;
+    int timerX = 4*btnPadding;
     int timerY = screenWidth;
-    displayTimer = new QGraphicsTextItem(QString::number(mm)+ QString(":")+ QString::number(ss), bottomPanel);
+    displayTimer = new QGraphicsTextItem("00:00", bottomPanel);
     displayTimer->setPos(timerX, timerY);
     displayTimer->setFont(f);
     displayTimer->setDefaultTextColor(Qt::white);
 }
 
 void Simulation::incrementTimer(){
-    ss++;
-    if(ss == 60){
-        mm++;
-        ss = 0;
-    }
-    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+    seconds++;
+
+    int ss = seconds%60;
+    int mm = seconds/60;
+    QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
+    QString seconds = ss < 10 ? "0" + QString::number(ss) : QString::number(ss);
+    displayTimer->setPlainText(minutes + ":" + seconds);
+
+    // NOTE: should finish the simulation and open records panel in the future
+    if(mm==settingsPanel->timerLimit) startToggle();
 }
 
 void Simulation::resetTimer(){
     timer->stop();
-    mm= ss= 0;
-    displayTimer->setPlainText(QString::number(mm)+ QString(":")+ QString::number(ss));
+    seconds= 0;
+    displayTimer->setPlainText("00:00");
 }

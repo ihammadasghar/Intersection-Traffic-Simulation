@@ -13,12 +13,14 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
+    detailsText = NULL;
     fx = 0;
     fy = 0;
     x = spawnOption->initialX;
     y = spawnOption->initialY;
     this->spawnOption = spawnOption;
-    setRotation((spawnOption->initialRotation) * 180/3.1415);
+    rotationAngle = (spawnOption->initialRotation)*3.1415/180;
+    setRotation((spawnOption->initialRotation));
     setPos(x,y);
     setPixmap(QPixmap(filePath));
     setTransformOriginPoint(0,0);
@@ -26,40 +28,43 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     speed = (rand() % (speedRangeUpperBound - speedRangeLowerBound)) + speedRangeLowerBound;
     pps = speed/30; // Pixels Per Sec
 
-    QFont f;
-    f.setPointSize(12);
-    detailsText = new QGraphicsTextItem("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed), this);
-    detailsText->setPos(0, 20);
-    detailsText->setFont(f);
-    detailsText->setDefaultTextColor(Qt::yellow);
-
-    QTimer * timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(move()));
+    movementTimer = new QTimer(this);
+    connect(movementTimer,SIGNAL(timeout()),this,SLOT(move()));
 
     // start the timer 33 msec for 30 FPS
-    timer->start(33);
+    movementTimer->start(33);
 }
 
 void Vehicle::updateDetails(){
-    detailsText->setPlainText("(" + QString::number(x) + ", " + QString::number(y) + ") " + QString::number(speed));
+    if(!(simulation->settingsPanel->vehicleDetailsEnabled)) {
+        if(detailsText){
+            detailsText->setVisible(false);
+            detailsText = NULL;
+        }
+        return;
+    }
+    if(detailsText==NULL){
+        QFont f;
+        f.setPointSize(10);
+        detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH", this);
+        detailsText->setPos(0, 20);
+        detailsText->setFont(f);
+        detailsText->setDefaultTextColor(Qt::yellow);
+    }
+    detailsText->setPlainText("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH");
 }
 
 void Vehicle::move(){
     // check if simulation is paused
-    if(!(simulation->isStarted)) return;
+    if(!(simulation->isStarted)){
+        movementTimer->stop();
+        return;
+    }
 
     // detect collisions
-    QList<QGraphicsItem *> list = scene()->collidingItems(this);
-    if(!(list.isEmpty())){
-        simulation->destroyCollidingVehicles(list);
-        foreach(QGraphicsItem * i , list){
-            Vehicle * item= dynamic_cast<Vehicle *>(i);
-            if (item)
-            {
-                selfDestruct();
-                return;
-            }
-        }
+    if(simulation->destroyCollidingVehicles(this)) {
+        selfDestruct();
+        return;
     }
 
     auto leftTurn = [](float a, float p1, float h, int fx) {return -a/pow(fx-p1, 2);};
@@ -78,9 +83,8 @@ void Vehicle::move(){
     fx += changeInX;
     fy += changeInY;
 
-    float rotation = (float)(spawnOption->initialRotation) * 180/3.1415;
-    rotationAngle = (rotation + angle)*180/3.1415;
-    setRotation(rotationAngle);
+    rotationAngle = ((float)(spawnOption->initialRotation)*3.1415/180) + angle;
+    setRotation(rotationAngle*180/3.1415);
 
     if(spawnOption->initialDirection == "right"){
         x = spawnOption->initialX + (int)fx;
@@ -128,24 +132,21 @@ void Vehicle::move(){
 
 }
 
-void Vehicle::changeSpeedOverInterval(double acceleration,int interval){
-    /*if(interval <= 100){
-        pps = pps-(acceleration/10);
-        return;
+void Vehicle::changeSpeed(double acceleration){
+    int newSpeed = speed + acceleration;
+    if(newSpeed < 80){
+        speed = 80;
+    }else if(newSpeed > 130) {
+        speed = 130;
+    }else{
+        speed = newSpeed;
     }
-    for(int i = 0; i < interval/100; i++){
-        pps = pps-(acceleration/10);
-        //QThread::msleep(100);
-    }*/
-
-    speed += acceleration;
-    if(speed < 80) speed = 80;
     pps = speed/30;
 
 }
 
 void Vehicle::selfDestruct(){
-    simulation->decrementCarsOnScreen();
+    simulation->statisticsPanel->decrementCarsOnScreen();
     simulation->aliveVehicles.removeOne(this);
     scene()->removeItem(this);
     delete this;

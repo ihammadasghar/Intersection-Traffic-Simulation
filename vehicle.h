@@ -16,12 +16,13 @@ public:
     float fy;
     int x;
     int y;
-    int rotationAngle;
+    float rotationAngle;
     int speed;
     SpawnOption* spawnOption;
     QGraphicsTextItem* detailsText;
+    QTimer* movementTimer;
     void updateDetails();
-    void changeSpeedOverInterval(double acceleration,int interval);
+    void changeSpeed(double acceleration);
 
 public slots:
     void move();

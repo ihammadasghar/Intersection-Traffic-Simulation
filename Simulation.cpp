@@ -15,6 +15,7 @@ static constexpr int initialSpeedRangeUpperBound = 100;
 static constexpr int vehiclesPerSec = 2;
 static constexpr int algorithmEnabled = false;
 static constexpr int soundEffectsEnabled = true;
+static constexpr int timerLimit = 2;
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
@@ -123,7 +124,7 @@ void Simulation::addVehicle(){
 
 void Simulation::drawGUI(){
     // Settings panel
-    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, algorithmEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound);
+    settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, algorithmEnabled, soundEffectsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound, timerLimit);
     scene->addItem(settingsPanel);
 
     int settingsBtnW = 50;
@@ -213,6 +214,9 @@ void Simulation::incrementTimer(){
     QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
     QString seconds = ss < 10 ? "0" + QString::number(ss) : QString::number(ss);
     displayTimer->setPlainText(minutes + ":" + seconds);
+
+    // NOTE: should finish the simulation and open records panel in the future
+    if(mm==settingsPanel->timerLimit) startToggle();
 }
 
 void Simulation::resetTimer(){

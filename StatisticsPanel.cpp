@@ -11,7 +11,7 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
 
     // this panel
     QFont f;
-    f.setPointSize(20);
+    f.setPointSize(16);
 
     // this panel
     int statisticsPanelX = 200;
@@ -26,16 +26,15 @@ StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPaddi
     setOpacity(0.7);
     setZValue(2);
 
-    int statisticsTextSize = 4;
-
-    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
-    int statisticsValues[statisticsTextSize] = {collisions, collisionsAvoided, carsOnScreen, totalCarsSpawned};
+    int statisticsTextSize = 5;
+    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionPercentageDisplay, &collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
+    QString statisticsTexts[statisticsTextSize] = {"Collision Percentage: ", "Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
+    QString statisticsValues[statisticsTextSize] = {"0%", QString::number(collisions), QString::number(collisionsAvoided), QString::number(carsOnScreen), QString::number(totalCarsSpawned)};
 
 
     for(int i=0; i<statisticsTextSize; i++){
-        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]), this);
-        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/4) );
+        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + (statisticsValues[i]), this);
+        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/statisticsTextSize) );
         (*statisticsTextsItems[i])->setFont(f);
         (*statisticsTextsItems[i])->setDefaultTextColor(Qt::white);
     }
@@ -48,15 +47,20 @@ void StatisticsPanel::reset(){
     carsOnScreen =0;
     totalCarsSpawned=0;
 
-    int statisticsTextSize = 4;
-    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
-    int statisticsValues[statisticsTextSize] = {collisions, collisionsAvoided, carsOnScreen, totalCarsSpawned};
+    int statisticsTextSize = 5;
+    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionPercentageDisplay, &collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
+    QString statisticsTexts[statisticsTextSize] = {"Collision Percentage:", "Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
+    QString statisticsValues[statisticsTextSize] = {"0%", "0", "0", "0", "0"};
 
     for(int i=0; i<statisticsTextSize; i++){
-        (*statisticsTextsItems[i])->setPlainText(QString(statisticsTexts[i]) + QString::number(statisticsValues[i]));
+        (*statisticsTextsItems[i])->setPlainText(QString(statisticsTexts[i]) + statisticsValues[i]);
     }
 
+}
+
+void StatisticsPanel::updateCollisionPercentage(){
+    int collisionPercentage = (((float)collisions/((float)totalCarsSpawned))*100);
+    collisionPercentageDisplay->setPlainText(QString("Collision Percentage: ") + QString::number(collisionPercentage) + "%");
 }
 
 void StatisticsPanel::incrementCollisionsAvoided(){
@@ -67,11 +71,13 @@ void StatisticsPanel::incrementCollisionsAvoided(){
 void StatisticsPanel::incrementCollisions(){
     collisions++;
     collisionsDisplay->setPlainText(QString("Collisions: ") + QString::number(collisions));
+    updateCollisionPercentage();
 }
 
 void StatisticsPanel::incrementTotalCarsSpawned(){
     totalCarsSpawned++;
     totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));
+    updateCollisionPercentage();
 }
 
 void StatisticsPanel::incrementCarsOnScreen(){

@@ -26,6 +26,8 @@ set(PROJECT_SOURCES
         SpawnOption.h
         Algorithm.cpp
         Algorithm.h
+        Results.h results.cpp
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

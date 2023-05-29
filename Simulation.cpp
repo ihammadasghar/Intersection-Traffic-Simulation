@@ -167,6 +167,10 @@ void Simulation::drawGUI(){
     endSimButton->setPos(endSimBtnX,endSimBtnY);
     //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
 
+    results = new Results(screenWidth, screenHeight, btnPadding);
+    scene->addItem(results);
+    results->setVisible(false);
+
     //Resuls button in Bottom Panel
     int resultsBtnX = playBtnX + btnPadding;
     int resultsBtnY = playBtnY + playBtnH + btnPadding;
@@ -175,7 +179,7 @@ void Simulation::drawGUI(){
 
     resultsButton = new Button(QString("Results"), Qt::yellow, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
     resultsButton->setPos(resultsBtnX,resultsBtnY);
-    //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
+    connect(resultsButton,SIGNAL(clicked()),results,SLOT(resultsPanel()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
 

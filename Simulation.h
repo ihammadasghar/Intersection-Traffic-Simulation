@@ -8,6 +8,7 @@
 #include "SettingsPanel.h"
 #include "StatisticsPanel.h"
 #include "SpawnOption.h"
+#include "Results.h"
 #include "vehicle.h"
 #include "Algorithm.h"
 
@@ -26,6 +27,7 @@ public:
     QGraphicsRectItem* bottomPanel;
     SettingsPanel* settingsPanel;
     StatisticsPanel* statisticsPanel;
+    Results* results;
 
     // Timer
     QTimer* timer;

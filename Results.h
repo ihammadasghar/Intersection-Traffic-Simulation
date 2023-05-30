@@ -11,13 +11,13 @@ class Results: public QObject,public QGraphicsRectItem{
 public:
     Results(int screenWidth, int screenHeight, int btnPadding, QGraphicsItem * parent=NULL);
     QList<QList<QString>> recordsList;
-    QGraphicsTextItem* displaySim;
-    QGraphicsTextItem* displayCollisions;
-    QGraphicsTextItem* displayCollisionsAvoided;
-    QGraphicsTextItem* displayTotalCars;
-    QGraphicsTextItem* displayCarsPerSec;
-    QGraphicsTextItem* displaySpeedRange;
-    QGraphicsTextItem* displayPercentage;
+    QGraphicsTextItem* numberColDisplay;
+    QGraphicsTextItem* collisionsColDisplay;
+    QGraphicsTextItem* algorithmColDisplay;
+    QGraphicsTextItem* carsColDisplay;
+    QGraphicsTextItem* cpsColDisplay;
+    QGraphicsTextItem* speedColDisplay;
+    QGraphicsTextItem* percentageColDisplay;
     int panelPadding;
     int ResultsX;
     int ResultsY;

@@ -11,10 +11,10 @@ Results::Results(int screenWidth, int screenHeight, int btnPadding, QGraphicsIte
     int ResultsW = screenWidth;
     int ResultsH = screenWidth;;
     setRect(ResultsX,ResultsY,ResultsW,ResultsH);
-    panelPadding = 10;
+    panelPadding = 80;
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(Qt::yellow);
+    brush.setColor(Qt::black);
     setBrush(brush);
     setOpacity(0.7);
     setZValue(2);
@@ -23,14 +23,18 @@ Results::Results(int screenWidth, int screenHeight, int btnPadding, QGraphicsIte
     QFont f;
     f.setPointSize(13);
 
-    QGraphicsTextItem* statsVar[7] = {displaySim, displayCollisions , displayCollisionsAvoided, displayTotalCars,displayCarsPerSec, displaySpeedRange, displayPercentage};
-    QString statsName[7] = {"Sim \nNumber","Total \nCollisions", "Collisions \n Avoided","Total \n Cars","CPS","Speed \n Range","Accuracy \n %"};
+    QGraphicsTextItem** statsColDisplays[7] = {&numberColDisplay, &collisionsColDisplay, &carsColDisplay, &cpsColDisplay, &speedColDisplay, &algorithmColDisplay, &percentageColDisplay};
+    QString statsColName[7] = {"No.","Collisions","Cars","CPS","Speed", "Algorithm", "Collision %"};
 
-    for(int i =0; i<7; i++){
-        statsVar[i] = new QGraphicsTextItem(QString(statsName[i]), this);
-        statsVar[i]->setPos(ResultsX + 100*i/1.2, ResultsY+ panelPadding);
-        statsVar[i]->setFont(f);
-        statsVar[i]->setDefaultTextColor(Qt::black);
+    for(int col =0; col<7; col++){
+        QString tempText = statsColName[col] + "\n";
+        for(int row = 0; row < recordsList.length(); row++){
+            tempText += recordsList[row][col] + "\n";
+        }
+        (*statsColDisplays[col]) = new QGraphicsTextItem(tempText, this);
+        (*statsColDisplays[col])->setPos(panelPadding*col, 80);
+        (*statsColDisplays[col])->setFont(f);
+        (*statsColDisplays[col])->setDefaultTextColor(Qt::white);
     }
 
     this->setVisible(false);
@@ -46,32 +50,28 @@ void Results::addRecord(){
     int collisions = simulation->statisticsPanel->collisions;
     int totalCarsSpawned = simulation->statisticsPanel->totalCarsSpawned;
 
-    displaySim->setPlainText(QString::number(recordsList.length()+1));
-    record.append(QString(displaySim->toPlainText()));
+    record.append(QString::number(recordsList.length()+1));
     record.append(QString::number(collisions));
-    record.append(QString::number(simulation->statisticsPanel->collisionsAvoided));
     record.append(QString::number(totalCarsSpawned));
     record.append(QString::number(simulation->settingsPanel->vehiclesPerSec));
     record.append(QString::number(simulation->settingsPanel->speedRangeLowerBound)+ " to " +QString::number(simulation->settingsPanel->speedRangeUpperBound));
-    record.append(QString::number((((float)collisions/((float)totalCarsSpawned))*100)));
+    record.append(simulation->settingsPanel->algorithmEnabled ? QString("On") : QString("Off"));
+    record.append(QString::number((((float)collisions/((float)totalCarsSpawned))*100)) + "%");
 
     recordsList.append(record);
 
 }
 
 void Results::drawRecords(){
-    int recordsLen = recordsList.length();
-    QString tempRecord;
+    QGraphicsTextItem** statsColDisplays[7] = {&numberColDisplay, &collisionsColDisplay, &carsColDisplay, &cpsColDisplay, &speedColDisplay, &algorithmColDisplay, &percentageColDisplay};
+    QString statsColName[7] = {"No.","Collisions","Cars","CPS","Speed", "Algorithm", "Collision %"};
 
-    QGraphicsTextItem* statsVar[7] = {displaySim, displayCollisions , displayCollisionsAvoided, displayTotalCars,displayCarsPerSec, displaySpeedRange, displayPercentage};
-    QString statsName[7] = {"Sim \nNumber","Total \nCollisions", "Collisions \n Avoided","Total \n Cars","CPS","Speed \n Range","Accuracy \n %"};
-
-    for(int i=0; i<7; i++){
-        for(int j=0; j<recordsLen; j++){
-            tempRecord.append("\n");
-            tempRecord.append(recordsList[i][j]);
+    for(int col =0; col<7; col++){
+        QString tempText = statsColName[col] + "\n";
+        for(int row = 0; row < recordsList.length(); row++){
+            tempText += recordsList[row][col] + "\n";
         }
-        //statsVar[i]->setPlainText(QString(statsName[i]+ "\n" +tempRecord));
-        tempRecord.clear();
+        (*statsColDisplays[col])->setPlainText(tempText);
     }
+
 }

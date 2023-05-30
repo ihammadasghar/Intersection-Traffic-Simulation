@@ -78,12 +78,14 @@ void Simulation::startToggle(){
 
         // Run anti collision algorithm
         if(settingsPanel->algorithmEnabled) algorithm->run();
+        if(results->isVisible()) results->toggleResults();
 
     }else{
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
         vehicleSpawnTimer->stop();
         timer->stop();
+
     }
 }
 

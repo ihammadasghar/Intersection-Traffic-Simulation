@@ -58,6 +58,7 @@ public slots:
     void drawTimer();
     void incrementTimer();
     void resetTimer();
+    void finishSimulation();
   
 private:
     void drawGUI();

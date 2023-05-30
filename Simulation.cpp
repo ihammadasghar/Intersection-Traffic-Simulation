@@ -78,12 +78,14 @@ void Simulation::startToggle(){
 
         // Run anti collision algorithm
         if(settingsPanel->algorithmEnabled) algorithm->run();
+        if(results->isVisible()) results->toggleResults();
 
     }else{
         playButton->setText("Start");
         playButton->setColor(Qt::darkGreen);
         vehicleSpawnTimer->stop();
         timer->stop();
+
     }
 }
 
@@ -165,7 +167,7 @@ void Simulation::drawGUI(){
 
     endSimButton = new Button(QString("Finish"), Qt::red, 20,endSimBtnW, endSimBtnH, 0, 0, bottomPanel);
     endSimButton->setPos(endSimBtnX,endSimBtnY);
-    //connect(resultsButton,SIGNAL(clicked()),this,SLOT(startToggle()));
+    connect(endSimButton,SIGNAL(clicked()),this,SLOT(finishSimulation()));
 
     results = new Results(screenWidth, screenHeight, btnPadding);
     scene->addItem(results);
@@ -179,12 +181,22 @@ void Simulation::drawGUI(){
 
     resultsButton = new Button(QString("Results"), Qt::yellow, 20, resultsBtnW, resultsBtnH, 0, 0, bottomPanel);
     resultsButton->setPos(resultsBtnX,resultsBtnY);
-    connect(resultsButton,SIGNAL(clicked()),results,SLOT(resultsPanel()));
+
+    connect(resultsButton,SIGNAL(clicked()),results,SLOT(toggleResults()));
+   // connect(resultsButton,SIGNAL(clicked()),results,SLOT(addRecord()));
 
     statisticsPanel = new StatisticsPanel(screenWidth, screenHeight, btnPadding, bottomPanel);
 
     scene->addItem(bottomPanel);
     drawTimer();
+
+}
+
+void Simulation::finishSimulation(){
+    results->addRecord();
+    results->toggleResults();
+    settingsPanel->restart();
+    settingsPanel->toggle();
 
 }
 

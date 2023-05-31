@@ -16,9 +16,8 @@ void Algorithm::run(){
 void Algorithm::intersectingLines(){
     if(!(simulation->isStarted)) timer->stop();;
 
-    float maxDistance = 800; // max distance between two cars to avoid possible collision
-    float lineLength = 600;
-    double accelerationPerSec = 10;
+    float lineLength = 800;
+    double accelerationPerSec = 20;
 
     QList<Vehicle*> cars = simulation->aliveVehicles;
     Vehicle* car1;
@@ -29,10 +28,6 @@ void Algorithm::intersectingLines(){
         for(int j = i + 1; j < cars.length(); j++){
             car2 = cars[j];
             auto getDistance = [](double x0, double y0, double x1, double y1){ return pow((pow(x1 - x0,2) +pow(y1 - y0, 2)),0.5);};
-            float distance = getDistance(car1->x, car1->y, car2->x, car2->y);
-
-            // check distance
-            if(distance>maxDistance) continue;
 
             // starting points of the lines
             double AFIRST = ((lineLength/2) * cos((car1->rotationAngle)+3.1415)) + car1->x;
@@ -69,13 +64,15 @@ void Algorithm::intersectingLines(){
 
             if(car1ToCollision <= car2ToCollision){
                 // speed up car 1 and slow down car 2 to avoid collision
-                car1->changeSpeed(accelerationPerSec);
-                car2->changeSpeed(-accelerationPerSec/2);
+                float r = car1ToCollision/car2ToCollision;
+                car1->changeSpeed(accelerationPerSec*r);
+                car2->changeSpeed(-accelerationPerSec*r);
             }
             else {
                 // speed up car 2 and slow down car 1 to avoid collision
-                car2->changeSpeed(accelerationPerSec);
-                car1->changeSpeed(-accelerationPerSec/2);
+                float r = car2ToCollision/car1ToCollision;
+                car2->changeSpeed(accelerationPerSec*r);
+                car1->changeSpeed(-accelerationPerSec*r);
             }
 
 

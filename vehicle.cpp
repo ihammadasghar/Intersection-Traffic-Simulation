@@ -136,8 +136,8 @@ void Vehicle::changeSpeed(double acceleration){
     int newSpeed = speed + acceleration;
     if(newSpeed < 80){
         speed = 80;
-    }else if(newSpeed > 130) {
-        speed = 130;
+    }else if(newSpeed > 180) {
+        speed = 180;
     }else{
         speed = newSpeed;
     }

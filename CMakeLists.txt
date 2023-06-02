@@ -66,6 +66,7 @@ set(vehicles_resource_files
     "static/images/carRed.png"
     "static/images/carGreen.png"
     "static/images/carOrange.png"
+    "static/images/carTest.png"
     "static/images/carTaxi.png"
 )
 

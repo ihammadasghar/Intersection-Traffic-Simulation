@@ -22,6 +22,7 @@ public:
     // states
     QList<Vehicle*> aliveVehicles;
     bool isStarted;
+    int previousSpawnOption;
 
     // Panels
     QGraphicsRectItem* bottomPanel;

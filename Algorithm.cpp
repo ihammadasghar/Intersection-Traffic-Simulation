@@ -29,6 +29,14 @@ void Algorithm::intersectingLines(){
             car2 = cars[j];
             auto getDistance = [](double x0, double y0, double x1, double y1){ return pow((pow(x1 - x0,2) +pow(y1 - y0, 2)),0.5);};
 
+            /*// break mechanism
+            float distanceBetweenCars = getDistance(pos().x(), pos().y(), v->x, v->y);
+            if(distanceBetweenCars < 50){
+                if(getDistance(2*x, 2*y, v->x, v->y) < distanceBetweenCars){
+
+                }
+            }*/
+
             // starting points of the lines
             double AFIRST = ((lineLength/2) * cos((car1->rotationAngle)+3.1415)) + car1->x;
             double ASECOND = ((lineLength/2) * sin(car1->rotationAngle)+3.1415) + car1->y;

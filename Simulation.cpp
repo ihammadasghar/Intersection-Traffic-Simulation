@@ -50,6 +50,7 @@ Simulation::Simulation(QWidget *parent){
     // Initial Settings
     isStarted = false;
     seconds = 0;
+    previousSpawnOption = 0;
     algorithm = new Algorithm("intersecting lines");
 
     // Setup Timers
@@ -119,6 +120,9 @@ void Simulation::addVehicle(){
     statisticsPanel->incrementTotalCarsSpawned();
     statisticsPanel->incrementCarsOnScreen();
     int pickedSpawnOption = (rand() % 16);
+    while(previousSpawnOption == pickedSpawnOption){
+        pickedSpawnOption = (rand() % 16);
+    }
     Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound, spawnOptions[pickedSpawnOption]);
     scene->addItem(vehicle);
     aliveVehicles.append(vehicle);

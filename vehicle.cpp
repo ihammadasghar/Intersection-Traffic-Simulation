@@ -9,10 +9,11 @@
 extern Simulation * simulation;
 
 Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption* spawnOption, QGraphicsItem *parent): QObject(), QGraphicsPixmapItem(parent){
-    int pickedCar = (rand() % 4);
+    int pickedCar = 0;
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
+    stoppedForCalls = 0;
     detailsText = NULL;
     fx = 0;
     fy = 0;
@@ -65,7 +66,7 @@ void Vehicle::move(){
     if(simulation->destroyCollidingVehicles(this)) {
         selfDestruct();
         return;
-    }
+    }   
 
     auto leftTurn = [](float a, float p1, float h, int fx) {return -a/pow(fx-p1, 2);};
     auto rightTurn = [](float a, float p1, float h, int fx) {return a/pow(fx+(2*h)-p1, 2);};
@@ -83,9 +84,6 @@ void Vehicle::move(){
     fx += changeInX;
     fy += changeInY;
 
-    rotationAngle = ((float)(spawnOption->initialRotation)*3.1415/180) + angle;
-    setRotation(rotationAngle*180/3.1415);
-
     if(spawnOption->initialDirection == "right"){
         x = spawnOption->initialX + (int)fx;
         y = spawnOption->initialY + (int)fy;
@@ -102,8 +100,13 @@ void Vehicle::move(){
         y = spawnOption->initialY + (int)fx;
         x = spawnOption->initialX - (int)fy;
     }
-    setPos(x, y);
 
+
+    auto getDistance = [](double x0, double y0, double x1, double y1){ return pow((pow(x1 - x0,2) +pow(y1 - y0, 2)),0.5);};
+
+    rotationAngle = ((float)(spawnOption->initialRotation)*3.1415/180) + angle;
+    setRotation(rotationAngle*180/3.1415);
+    setPos(x, y);
     updateDetails();
 
     // destroy vehicle when it hits the bottom border

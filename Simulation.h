@@ -34,6 +34,7 @@ public:
     QTimer* vehicleSpawnTimer;
     int seconds;
     QGraphicsTextItem* displayTimer;
+    int greenLightDirection:
 
     // Main buttons
     Button* playButton;
@@ -48,6 +49,7 @@ public:
     void addSpawnOptions();
     bool destroyCollidingVehicles(Vehicle* car);
     void destroyAllVehicles();
+    void changeGreenLight();
 
 
 

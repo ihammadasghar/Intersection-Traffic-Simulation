@@ -16,21 +16,22 @@ static constexpr int vehiclesPerSec = 2;
 static constexpr int algorithmEnabled = false;
 static constexpr int vehicleDetailsEnabled = false;
 static constexpr int timerLimit = 1;
+QString directions[4] = {'right', 'down', 'left', 'up'};
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
-    new SpawnOption(600,260,180,"left","right"),
-    new SpawnOption(600,290,180,"left","left"),
-    new SpawnOption(260,0,90,"down","right"),
-    new SpawnOption(290,0,90,"down","left"),
-    new SpawnOption(310,550,270,"up","left"),
-    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
+    new SpawnOption(600,260,180,"left","right"),
+    new SpawnOption(600,290,180,"left","left"),
     new SpawnOption(600,260,180,"left","straight"),
     new SpawnOption(600,290,180,"left","straight"),
+    new SpawnOption(260,0,90,"down","right"),
+    new SpawnOption(290,0,90,"down","left"),
     new SpawnOption(260,0,90,"down","straight"),
     new SpawnOption(290,0,90,"down","straight"),
+    new SpawnOption(310,550,270,"up","left"),
+    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(310,550,270,"up","straight"),
     new SpawnOption(340,550,270,"up","straight")
 };
@@ -119,6 +120,9 @@ void Simulation::addVehicle(){
     statisticsPanel->incrementTotalCarsSpawned();
     statisticsPanel->incrementCarsOnScreen();
     int pickedSpawnOption = (rand() % 16);
+    while(spawnOptions[pickedSpawnOption]->initialDirection != directions[greenLightDirection]){
+        pickedSpawnOption = (rand() % 16);
+    }
     Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound, spawnOptions[pickedSpawnOption]);
     scene->addItem(vehicle);
     aliveVehicles.append(vehicle);
@@ -224,7 +228,8 @@ void Simulation::drawTimer(){
 
 void Simulation::incrementTimer(){
     seconds++;
-
+    // change greenLight
+    if(seconds%10==0) changeGreenLight();
     int ss = seconds%60;
     int mm = seconds/60;
     QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
@@ -233,6 +238,15 @@ void Simulation::incrementTimer(){
 
     // NOTE: should finish the simulation and open records panel in the future
     if(mm==settingsPanel->timerLimit) startToggle();
+}
+
+void Simulation::changeGreenLight(){
+    greenLightDirection = (greenLightDirection + 1)%4;
+    for(int i = 0; i < aliveVehicles.length(); i++){
+        if(aliveVehicles[i]->distanceCovered < 100 || aliveVehicles[i]->spawnOption->initialDirection != directions[greenLightDirection]){
+            aliveVehicles[i]->movementTimer->stop();
+        }
+    }
 }
 
 void Simulation::resetTimer(){

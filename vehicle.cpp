@@ -13,6 +13,7 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
+    distanceCovered = 0;
     detailsText = NULL;
     fx = 0;
     fy = 0;
@@ -60,6 +61,7 @@ void Vehicle::move(){
         movementTimer->stop();
         return;
     }
+    
 
     // detect collisions
     if(simulation->destroyCollidingVehicles(this)) {
@@ -103,7 +105,7 @@ void Vehicle::move(){
         x = spawnOption->initialX - (int)fy;
     }
     setPos(x, y);
-
+    distanceCovered += pps;
     updateDetails();
 
     // destroy vehicle when it hits the bottom border

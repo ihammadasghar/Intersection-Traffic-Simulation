@@ -13,20 +13,24 @@ public:
     bool simulationStarted;
     bool algorithmEnabled;
     bool vehicleDetailsEnabled;
+    bool trafficLightsEnabled;
     int vehiclesPerSec;
     int speedRangeLowerBound;
     int speedRangeUpperBound;
     int timerLimit;
+
 
     QGraphicsTextItem* vehiclesPerSecSetting;
     QGraphicsTextItem* vehicleDetailsSetting;
     QGraphicsTextItem* algorithmSetting;
     QGraphicsTextItem* speedRangeSetting;
     QGraphicsTextItem* timerLimitSetting;
+    QGraphicsTextItem* trafficLightsSetting;
 
 public slots:
     void toggle();
     void toggleAlgorithm();
+    void toggleTrafficLights();
     void toggleVehicleDetails();
     void incrementVehiclesPerSec();
     void decrementVehiclesPerSec();

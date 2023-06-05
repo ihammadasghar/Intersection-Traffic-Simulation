@@ -18,6 +18,7 @@ public:
     int y;
     float rotationAngle;
     int speed;
+    float distanceCovered;
     SpawnOption* spawnOption;
     QGraphicsTextItem* detailsText;
     QTimer* movementTimer;

@@ -4,6 +4,7 @@
 extern Simulation * simulation;
 
 SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, int initialTimerLimit, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+    trafficLightsEnabled = false;
     algorithmEnabled = initialAlgorithmEnabled;
     vehicleDetailsEnabled = initialVehicleDetailsEnabled;
     vehiclesPerSec = initialVehiclesPerSec;
@@ -32,20 +33,22 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     int settingX = settingsPanelX + btnPadding;
     int settingY = settingsPanelY + btnPadding;
 
-    int numOfSettings = 5;
+    int numOfSettings = 6;
     QGraphicsTextItem** displayTextGraphics[numOfSettings] = {
         &algorithmSetting,
         &vehicleDetailsSetting,
         &vehiclesPerSecSetting,
         &speedRangeSetting,
-        &timerLimitSetting
+        &timerLimitSetting,
+        &trafficLightsSetting
     };
     QString displayTextsStrings[numOfSettings] = {
         QString("Algorithm: "+ QString(algorithmEnabled ? "On" : "Off")),
         QString("Vehicle Details: ") + QString(vehicleDetailsEnabled ? "On" : "Off"),
         QString("Cars Per Second: ") + QString::number(vehiclesPerSec),
         QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound),
-        QString("Timer Limit: ") + QString::number(timerLimit) + " mins"
+        QString("Timer Limit: ") + QString::number(timerLimit) + " mins",
+        QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"),
     };
 
     for(int i = 0; i < numOfSettings; i++){
@@ -140,6 +143,13 @@ SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, 
     restartBtn->setPos(restartBtnX, restartBtnY);
     connect(restartBtn,SIGNAL(clicked()),this,SLOT(restart()));
 
+    // TrafficLights Toggle
+    int trafficLightsBtnW = (settingsPanelW/2) - (btnPadding*2);
+    int trafficLightsBtnY = trafficLightsSetting->y();
+    Button* trafficLightsBtn = new Button(QString("O/I"), Qt::green, 20, trafficLightsBtnW, btnHeight, 0, 0, this);
+    trafficLightsBtn->setPos(btnX, trafficLightsBtnY);
+    connect(trafficLightsBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
+
     this->setVisible(false);
 }
 
@@ -159,6 +169,11 @@ void SettingsPanel::toggleAlgorithm(){
     algorithmEnabled = !algorithmEnabled;
     if(algorithmEnabled) simulation->algorithm->run();
     algorithmSetting->setPlainText(QString("Algorithm: ") + QString(algorithmEnabled ? "On" : "Off"));
+}
+
+void SettingsPanel::toggleTrafficLights(){
+    trafficLightsEnabled = !trafficLightsEnabled;
+    trafficLightsSetting->setPlainText(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
 }
 
 void SettingsPanel::toggleVehicleDetails(){

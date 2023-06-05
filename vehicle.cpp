@@ -13,6 +13,7 @@ Vehicle::Vehicle(int speedRangeLowerBound, int speedRangeUpperBound, SpawnOption
     QString carTypes[5] = {"Red", "Green", "Taxi", "Orange"};
     QString filePath = ":static/images/car" + carTypes[pickedCar] + ".png";
 
+    distanceCovered = 0;
     detailsText = NULL;
     fx = 0;
     fy = 0;
@@ -46,12 +47,12 @@ void Vehicle::updateDetails(){
     if(detailsText==NULL){
         QFont f;
         f.setPointSize(10);
-        detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH", this);
+        detailsText = new QGraphicsTextItem("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(distanceCovered) + " KMPH", this);
         detailsText->setPos(0, 20);
         detailsText->setFont(f);
         detailsText->setDefaultTextColor(Qt::yellow);
     }
-    detailsText->setPlainText("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(speed) + " KMPH");
+    detailsText->setPlainText("X:" + QString::number(x) + ", Y:" + QString::number(y) + "\nSpeed: " + QString::number(distanceCovered) + " KMPH");
 }
 
 void Vehicle::move(){
@@ -60,6 +61,7 @@ void Vehicle::move(){
         movementTimer->stop();
         return;
     }
+    
 
     // detect collisions
     if(simulation->destroyCollidingVehicles(this)) {
@@ -103,7 +105,7 @@ void Vehicle::move(){
         x = spawnOption->initialX - (int)fy;
     }
     setPos(x, y);
-
+    distanceCovered += pps;
     updateDetails();
 
     // destroy vehicle when it hits the bottom border
@@ -136,8 +138,8 @@ void Vehicle::changeSpeed(double acceleration){
     int newSpeed = speed + acceleration;
     if(newSpeed < 80){
         speed = 80;
-    }else if(newSpeed > 180) {
-        speed = 180;
+    }else if(newSpeed > 200) {
+        speed = 200;
     }else{
         speed = newSpeed;
     }

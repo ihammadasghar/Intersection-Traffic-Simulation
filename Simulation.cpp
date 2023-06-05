@@ -10,27 +10,28 @@ static constexpr int screenWidth = 600;
 static constexpr int screenHeight = 800;
 static constexpr int vehicleCount = 1;
 static constexpr int btnPadding = 10;
-static constexpr int initialSpeedRangeLowerBound = 80;
-static constexpr int initialSpeedRangeUpperBound = 100;
+static constexpr int initialSpeedRangeLowerBound = 150;
+static constexpr int initialSpeedRangeUpperBound = 180;
 static constexpr int vehiclesPerSec = 2;
 static constexpr int algorithmEnabled = false;
 static constexpr int vehicleDetailsEnabled = false;
 static constexpr int timerLimit = 1;
+QString directions[4] = {"right", "down", "left", "up"};
 SpawnOption* spawnOptions[16] = {
     new SpawnOption(0,310,0,"right","left"),
     new SpawnOption(0,340,0,"right","right"),
-    new SpawnOption(600,260,180,"left","right"),
-    new SpawnOption(600,290,180,"left","left"),
-    new SpawnOption(260,0,90,"down","right"),
-    new SpawnOption(290,0,90,"down","left"),
-    new SpawnOption(310,550,270,"up","left"),
-    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(0,310,0,"right","straight"),
     new SpawnOption(0,340,0,"right","straight"),
+    new SpawnOption(600,260,180,"left","right"),
+    new SpawnOption(600,290,180,"left","left"),
     new SpawnOption(600,260,180,"left","straight"),
     new SpawnOption(600,290,180,"left","straight"),
+    new SpawnOption(260,0,90,"down","right"),
+    new SpawnOption(290,0,90,"down","left"),
     new SpawnOption(260,0,90,"down","straight"),
     new SpawnOption(290,0,90,"down","straight"),
+    new SpawnOption(310,550,270,"up","left"),
+    new SpawnOption(340,550,270,"up","right"),
     new SpawnOption(310,550,270,"up","straight"),
     new SpawnOption(340,550,270,"up","straight")
 };
@@ -48,6 +49,8 @@ Simulation::Simulation(QWidget *parent){
     setFixedSize(screenWidth,screenHeight);
 
     // Initial Settings
+    previousSpawnOption = 0;
+    greenLightDirection = 0;
     isStarted = false;
     seconds = 0;
     algorithm = new Algorithm("intersecting lines");
@@ -119,12 +122,48 @@ void Simulation::addVehicle(){
     statisticsPanel->incrementTotalCarsSpawned();
     statisticsPanel->incrementCarsOnScreen();
     int pickedSpawnOption = (rand() % 16);
+    if(settingsPanel->trafficLightsEnabled){
+        while(spawnOptions[pickedSpawnOption]->initialDirection != directions[greenLightDirection] || previousSpawnOption == pickedSpawnOption){
+            pickedSpawnOption = (rand() % 16);
+        }
+    }
+
+    previousSpawnOption = pickedSpawnOption;
     Vehicle *vehicle = new Vehicle(settingsPanel->speedRangeLowerBound, settingsPanel->speedRangeUpperBound, spawnOptions[pickedSpawnOption]);
     scene->addItem(vehicle);
     aliveVehicles.append(vehicle);
 }
 
 void Simulation::drawGUI(){
+    for(int i = 0; i < 2; i++){
+        // Start/Stop button in Bottom Panel
+        int BtnX = 160;
+        int BtnY = 400 - (i*220);
+        int BtnW = 25;
+        int BtnH = 25;
+
+        Button* button = new Button(QString(""), Qt::red,0, BtnW, BtnH, 0, 0);
+        button->setPos(BtnX,BtnY);
+        scene->addItem(button);
+        trafficLightButtons.append(button);
+    }
+
+    for(int i = 0; i < 2; i++){
+        // Start/Stop button in Bottom Panel
+        int BtnX = 420;
+        int BtnY = 180 + (i*220);
+        int BtnW = 25;
+        int BtnH = 25;
+
+        Button* button = new Button(QString(""), Qt::red,0, BtnW, BtnH, 0, 0);
+        button->setPos(BtnX,BtnY);
+        scene->addItem(button);
+        trafficLightButtons.append(button);
+    }
+
+    trafficLightButtons[0]->setColor(Qt::green);
+
+
     // Settings panel
     settingsPanel = new SettingsPanel(screenWidth, screenHeight, btnPadding, algorithmEnabled, vehicleDetailsEnabled, vehiclesPerSec, initialSpeedRangeLowerBound, initialSpeedRangeUpperBound, timerLimit);
     scene->addItem(settingsPanel);
@@ -224,7 +263,8 @@ void Simulation::drawTimer(){
 
 void Simulation::incrementTimer(){
     seconds++;
-
+    // change greenLight
+    if(seconds%5==0 && settingsPanel->trafficLightsEnabled) changeGreenLight();
     int ss = seconds%60;
     int mm = seconds/60;
     QString minutes = mm < 10 ? "0" + QString::number(mm) : QString::number(mm);
@@ -233,6 +273,20 @@ void Simulation::incrementTimer(){
 
     // NOTE: should finish the simulation and open records panel in the future
     if(mm==settingsPanel->timerLimit) startToggle();
+}
+
+void Simulation::changeGreenLight(){
+    trafficLightButtons[greenLightDirection]->setColor(Qt::red);
+    greenLightDirection = (greenLightDirection + 1)%4;
+    trafficLightButtons[greenLightDirection]->setColor(Qt::green);
+    for(int i = 0; i < aliveVehicles.length(); i++){
+        if(aliveVehicles[i]->distanceCovered < 100 && aliveVehicles[i]->spawnOption->initialDirection != directions[greenLightDirection]){
+            aliveVehicles[i]->movementTimer->stop();
+        }else{
+            aliveVehicles[i]->movementTimer->start(33);
+        }
+
+    }
 }
 
 void Simulation::resetTimer(){

@@ -22,6 +22,7 @@ public:
     // states
     QList<Vehicle*> aliveVehicles;
     bool isStarted;
+    int previousSpawnOption;
 
     // Panels
     QGraphicsRectItem* bottomPanel;
@@ -34,11 +35,13 @@ public:
     QTimer* vehicleSpawnTimer;
     int seconds;
     QGraphicsTextItem* displayTimer;
+    int greenLightDirection;
 
     // Main buttons
     Button* playButton;
     Button* resultsButton;
     Button* endSimButton;
+    QList<Button*> trafficLightButtons;
 
     Algorithm* algorithm;
 
@@ -48,6 +51,7 @@ public:
     void addSpawnOptions();
     bool destroyCollidingVehicles(Vehicle* car);
     void destroyAllVehicles();
+    void changeGreenLight();
 
 
 

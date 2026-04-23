@@ -1,20 +1,23 @@
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
-#include <QString>
+
 #include <QObject>
-#include <QTimer>
 
-class Algorithm: public QObject{
-   Q_OBJECT
+class QTimer;
+class Simulation;
+
+class Algorithm : public QObject {
+    Q_OBJECT
 public:
-    Algorithm(QString name);
-    QString name;
+    Algorithm(Simulation* simulation);
     void run();
+
+private slots:
+    void checkIntersectingLines();
+
+private:
+    Simulation* simulation;
     QTimer* timer;
-
-public slots:
-    void intersectingLines();
-
 };
 
 #endif // ALGORITHM_H

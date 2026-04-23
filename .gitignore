@@ -1,6 +1,7 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 /build-Intersection-Traffic-Simulation-Desktop_Qt_6_4_3_MinGW_64_bit-Debug
+/build/
 
 *~
 *.autosave

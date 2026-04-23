@@ -12,6 +12,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp
+        Direction.h
+        Constants.h
         Simulation.cpp
         Simulation.h
         Vehicle.cpp
@@ -26,8 +28,8 @@ set(PROJECT_SOURCES
         SpawnOption.h
         Algorithm.cpp
         Algorithm.h
-        Results.h results.cpp
-
+        Results.h
+        Results.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

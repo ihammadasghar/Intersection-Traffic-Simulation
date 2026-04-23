@@ -1,231 +1,330 @@
 #include "SettingsPanel.h"
-#include "Simulation.h"
+#include "Button.h"
+#include "Constants.h"
+#include <QGraphicsTextItem>
+#include <QBrush>
+#include <QPen>
+#include <QFont>
 
-extern Simulation * simulation;
-
-SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding, bool initialAlgorithmEnabled, bool initialVehicleDetailsEnabled, int initialVehiclesPerSec, int initialSpeedRangeLowerBound, int initialSpeedRangeUpperBound, int initialTimerLimit, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+SettingsPanel::SettingsPanel(int screenWidth, int screenHeight, int btnPadding,
+                             QGraphicsItem* parent)
+    : QObject()
+    , QGraphicsRectItem(parent)
+{
+    // Initialize defaults
+    algorithmEnabled = kDefaultAlgorithmEnabled;
+    vehicleDetailsEnabled = kDefaultVehicleDetailsEnabled;
+    vehiclesPerSec = kDefaultVehiclesPerSec;
+    speedRangeLowerBound = kDefaultSpeedRangeLower;
+    speedRangeUpperBound = kDefaultSpeedRangeUpper;
+    timerLimit = kDefaultTimerLimit;
     trafficLightsEnabled = false;
-    algorithmEnabled = initialAlgorithmEnabled;
-    vehicleDetailsEnabled = initialVehicleDetailsEnabled;
-    vehiclesPerSec = initialVehiclesPerSec;
-    speedRangeLowerBound = initialSpeedRangeLowerBound;
-    speedRangeUpperBound = initialSpeedRangeUpperBound;
-    timerLimit = initialTimerLimit;
+    stopSignEnabled = false;
+    speedBumpEnabled = false;
+    yieldEnabled = false;
+    speedLimitEnabled = false;
 
-    // this panel
-    int settingsPanelX = screenWidth/10;
-    int settingsPanelY = screenHeight/10;
-    int settingsPanelW = screenWidth - (screenWidth/5);
-    int settingsPanelH = screenHeight - (screenHeight/5) - (screenHeight/4);
-    setRect(settingsPanelX,settingsPanelY,settingsPanelW,settingsPanelH);
+    // Panel dimensions — slightly wider for new content
+    panelX = screenWidth / 12;
+    panelY = screenHeight / 14;
+    panelW = screenWidth - (screenWidth / 6);
+    panelH = screenHeight - (screenHeight / 7) - (screenHeight / 4);
+    setRect(panelX, panelY, panelW, panelH);
+
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(Qt::black);
+    brush.setColor(Colors::panelDark());
     setBrush(brush);
-    setOpacity(0.7);
-    setZValue(2);
+    QPen pen(QColor(255, 255, 255, 30));
+    pen.setWidth(1);
+    setPen(pen);
+    setOpacity(0.95);
+    setZValue(3);
 
-    // Add settings to panel
-    // Settings Display Texts
-    QFont f;
-    f.setPointSize(20);
+    int padding = btnPadding;
+    int contentX = panelX + padding;
+    int rightColX = panelX + (panelW / 2) + padding;
+    int toggleBtnW = (panelW / 2) - (padding * 3);
+    int rowHeight = 38;
+    int curY = panelY + padding;
 
-    int settingX = settingsPanelX + btnPadding;
-    int settingY = settingsPanelY + btnPadding;
+    // ========== TITLE ==========
+    QFont titleFont("Segoe UI", 22);
+    titleFont.setWeight(QFont::Bold);
+    QGraphicsTextItem* title = new QGraphicsTextItem("Simulation Settings", this);
+    title->setPos(contentX + panelW / 6, curY);
+    title->setFont(titleFont);
+    title->setDefaultTextColor(Colors::textPrimary());
+    curY += 50;
 
-    int numOfSettings = 6;
-    QGraphicsTextItem** displayTextGraphics[numOfSettings] = {
-        &algorithmSetting,
-        &vehicleDetailsSetting,
-        &vehiclesPerSecSetting,
-        &speedRangeSetting,
-        &timerLimitSetting,
-        &trafficLightsSetting
-    };
-    QString displayTextsStrings[numOfSettings] = {
-        QString("Algorithm: "+ QString(algorithmEnabled ? "On" : "Off")),
-        QString("Vehicle Details: ") + QString(vehicleDetailsEnabled ? "On" : "Off"),
-        QString("Cars Per Second: ") + QString::number(vehiclesPerSec),
-        QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound),
-        QString("Timer Limit: ") + QString::number(timerLimit) + " mins",
-        QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"),
-    };
+    // ========== SECTION: Safety Strategies ==========
+    createSectionHeader("Safety Strategies", contentX, curY);
+    curY += 32;
 
-    for(int i = 0; i < numOfSettings; i++){
-        *displayTextGraphics[i] = new QGraphicsTextItem(displayTextsStrings[i], this);
-        (*displayTextGraphics[i])->setPos(settingX, settingY + (i*settingsPanelH/(numOfSettings+1)));
-        (*displayTextGraphics[i])->setFont(f);
-        (*displayTextGraphics[i])->setDefaultTextColor(Qt::white);
-    }
+    // --- Traffic Lights ---
+    trafficLightsLabel = createSettingLabel("Traffic Lights: Off", contentX, curY);
+    trafficLightsBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(trafficLightsBtn, &Button::clicked, this, &SettingsPanel::toggleTrafficLights);
+    curY += rowHeight;
 
-    // Buttons
-    int btnHeight = (settingsPanelH/(numOfSettings+1)) - (btnPadding*2);
-    int btnX = settingsPanelX + (settingsPanelW/2) + btnPadding;
+    // --- Stop Signs ---
+    stopSignLabel = createSettingLabel("Stop Signs: Off", contentX, curY);
+    stopSignBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(stopSignBtn, &Button::clicked, this, &SettingsPanel::toggleStopSign);
+    curY += rowHeight;
 
-    // Algorithm Toggle
-    int algorithmBtnW = (settingsPanelW/2) - (btnPadding*2);
-    int algorithmBtnY = algorithmSetting->y();
-    Button* algorithmBtn = new Button(QString("O/I"), Qt::green, 20, algorithmBtnW, btnHeight, 0, 0, this);
-    algorithmBtn->setPos(btnX, algorithmBtnY);
-    connect(algorithmBtn,SIGNAL(clicked()),this,SLOT(toggleAlgorithm()));
+    // --- Speed Bumps ---
+    speedBumpLabel = createSettingLabel("Speed Bumps: Off", contentX, curY);
+    speedBumpBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(speedBumpBtn, &Button::clicked, this, &SettingsPanel::toggleSpeedBump);
+    curY += rowHeight;
 
-    // Vehicle Details Setting
-    int vehicleDetailsBtnW = (settingsPanelW/2) - (btnPadding*2);
-    int vehicleDetailsBtnY = vehicleDetailsSetting->y();
-    Button* vehicleDetailsBtn = new Button(QString("O/I"), Qt::green,20, vehicleDetailsBtnW, btnHeight, 0, 0, this);
-    vehicleDetailsBtn->setPos(btnX, vehicleDetailsBtnY);
-    connect(vehicleDetailsBtn,SIGNAL(clicked()),this,SLOT(toggleVehicleDetails()));
+    // --- Yield Signs ---
+    yieldLabel = createSettingLabel("Yield Signs: Off", contentX, curY);
+    yieldBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(yieldBtn, &Button::clicked, this, &SettingsPanel::toggleYield);
+    curY += rowHeight;
 
-    // vehicles per sec setting
-    int vehiclesPerSecIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/2;
-    int vehiclesPerSecIncBtnX = btnX;
-    int vehiclesPerSecIncBtnY = vehiclesPerSecSetting->y();
-    Button* vehiclesPerSecIncBtn = new Button(QString("+"), Qt::green,20, vehiclesPerSecIncBtnW, btnHeight, 0, 0, this);
-    vehiclesPerSecIncBtn->setPos(btnX, vehiclesPerSecIncBtnY);
-    connect(vehiclesPerSecIncBtn,SIGNAL(clicked()),this,SLOT(incrementVehiclesPerSec()));
+    // --- Speed Limit Zone ---
+    speedLimitLabel = createSettingLabel("Speed Limit Zone: Off", contentX, curY);
+    speedLimitBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(speedLimitBtn, &Button::clicked, this, &SettingsPanel::toggleSpeedLimit);
+    curY += rowHeight;
 
-    int vehiclesPerSecDecBtnW = vehiclesPerSecIncBtnW;
-    int vehiclesPerSecDecBtnX = vehiclesPerSecIncBtnX + vehiclesPerSecIncBtnW;
-    int vehiclesPerSecDecBtnY = vehiclesPerSecIncBtnY;
-    Button* vehiclesPerSecDecBtn = new Button(QString("-"), Qt::red,20, vehiclesPerSecDecBtnW, btnHeight, 0, 0, this);
-    vehiclesPerSecDecBtn->setPos(vehiclesPerSecDecBtnX, vehiclesPerSecDecBtnY);
-    connect(vehiclesPerSecDecBtn,SIGNAL(clicked()),this,SLOT(decrementVehiclesPerSec()));
+    // --- Anti-collision Algorithm ---
+    algorithmLabel = createSettingLabel("Anti-collision AI: Off", contentX, curY);
+    algorithmBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(algorithmBtn, &Button::clicked, this, &SettingsPanel::toggleAlgorithm);
+    curY += rowHeight + 10;
 
-    // Speed Range setting
-    int speedRangeLowerBoundIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/4;
-    int speedRangeLowerBoundIncBtnX = btnX;
-    int speedRangeLowerBoundIncBtnY = speedRangeSetting->y();
-    Button* speedRangeLowerBoundIncBtn = new Button(QString("+"), Qt::green,20, speedRangeLowerBoundIncBtnW, btnHeight, 0, 0, this);
-    speedRangeLowerBoundIncBtn->setPos(speedRangeLowerBoundIncBtnX, speedRangeLowerBoundIncBtnY);
-    connect(speedRangeLowerBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeLowerBound()));
+    // ========== SECTION: Simulation Parameters ==========
+    createSectionHeader("Simulation Parameters", contentX, curY);
+    curY += 32;
 
-    int speedRangeLowerBoundDecBtnW = ((settingsPanelW/2) - (btnPadding*2))/4;
-    int speedRangeLowerBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + speedRangeLowerBoundIncBtnW;
-    int speedRangeLowerBoundDecBtnY = speedRangeSetting->y();
-    Button* speedRangeLowerBoundDecBtn = new Button(QString("-"), Qt::red,20, speedRangeLowerBoundDecBtnW, btnHeight, 0, 0, this);
-    speedRangeLowerBoundDecBtn->setPos(speedRangeLowerBoundDecBtnX, speedRangeLowerBoundDecBtnY);
-    connect(speedRangeLowerBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeLowerBound()));
+    // --- Vehicles Per Second ---
+    vehiclesPerSecLabel = createSettingLabel(
+        "Cars/Second: " + QString::number(vehiclesPerSec), contentX, curY);
+    int halfBtnW = (toggleBtnW - padding) / 2;
+    Button* vpsInc = new Button("+", Colors::accentGreen(), 16, halfBtnW, rowHeight - 4, 0, 0, this);
+    vpsInc->setPos(rightColX, curY);
+    connect(vpsInc, &Button::clicked, this, &SettingsPanel::incrementVehiclesPerSec);
+    Button* vpsDec = new Button("-", Colors::accentRed(), 16, halfBtnW, rowHeight - 4, 0, 0, this);
+    vpsDec->setPos(rightColX + halfBtnW + padding, curY);
+    connect(vpsDec, &Button::clicked, this, &SettingsPanel::decrementVehiclesPerSec);
+    curY += rowHeight;
 
-    int speedRangeUpperBoundIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/4;
-    int speedRangeUpperBoundIncBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*2);
-    int speedRangeUpperBoundIncBtnY = speedRangeSetting->y();
-    Button* speedRangeUpperBoundIncBtn = new Button(QString(" +"), Qt::green,20, speedRangeUpperBoundIncBtnW, btnHeight, 0, 0, this);
-    speedRangeUpperBoundIncBtn->setPos(speedRangeUpperBoundIncBtnX, speedRangeUpperBoundIncBtnY);
-    connect(speedRangeUpperBoundIncBtn,SIGNAL(clicked()),this,SLOT(incrementSpeedRangeUpperBound()));
+    // --- Speed Range ---
+    speedRangeLabel = createSettingLabel(
+        "Speed: " + QString::number(speedRangeLowerBound) + " - " + QString::number(speedRangeUpperBound),
+        contentX, curY);
+    int qBtnW = (toggleBtnW - padding * 3) / 4;
+    Button* sLInc = new Button("+", Colors::accentGreen(), 14, qBtnW, rowHeight - 4, 0, 0, this);
+    sLInc->setPos(rightColX, curY);
+    connect(sLInc, &Button::clicked, this, &SettingsPanel::incrementSpeedRangeLowerBound);
+    Button* sLDec = new Button("-", Colors::accentRed(), 14, qBtnW, rowHeight - 4, 0, 0, this);
+    sLDec->setPos(rightColX + qBtnW + padding, curY);
+    connect(sLDec, &Button::clicked, this, &SettingsPanel::decrementSpeedRangeLowerBound);
+    Button* sUInc = new Button("+", Colors::accentGreen(), 14, qBtnW, rowHeight - 4, 0, 0, this);
+    sUInc->setPos(rightColX + (qBtnW + padding) * 2, curY);
+    connect(sUInc, &Button::clicked, this, &SettingsPanel::incrementSpeedRangeUpperBound);
+    Button* sUDec = new Button("-", Colors::accentRed(), 14, qBtnW, rowHeight - 4, 0, 0, this);
+    sUDec->setPos(rightColX + (qBtnW + padding) * 3, curY);
+    connect(sUDec, &Button::clicked, this, &SettingsPanel::decrementSpeedRangeUpperBound);
+    curY += rowHeight;
 
-    int speedRangeUpperBoundDecBtnW = ((settingsPanelW/2) - (btnPadding*2))/4;
-    int speedRangeUpperBoundDecBtnX = settingsPanelX + (settingsPanelW/2) + btnPadding + (speedRangeLowerBoundIncBtnW*3);
-    int speedRangeUpperBoundDecBtnY = speedRangeSetting->y();
-    Button* speedRangeUpperBoundDecBtn = new Button(QString("-"), Qt::red,20, speedRangeUpperBoundDecBtnW, btnHeight, 0, 0, this);
-    speedRangeUpperBoundDecBtn->setPos(speedRangeUpperBoundDecBtnX, speedRangeUpperBoundDecBtnY);
-    connect(speedRangeUpperBoundDecBtn,SIGNAL(clicked()),this,SLOT(decrementSpeedRangeUpperBound()));
+    // --- Timer Limit ---
+    timerLimitLabel = createSettingLabel(
+        "Timer Limit: " + QString::number(timerLimit) + " min", contentX, curY);
+    Button* tlInc = new Button("+", Colors::accentGreen(), 16, halfBtnW, rowHeight - 4, 0, 0, this);
+    tlInc->setPos(rightColX, curY);
+    connect(tlInc, &Button::clicked, this, &SettingsPanel::incrementTimerLimit);
+    Button* tlDec = new Button("-", Colors::accentRed(), 16, halfBtnW, rowHeight - 4, 0, 0, this);
+    tlDec->setPos(rightColX + halfBtnW + padding, curY);
+    connect(tlDec, &Button::clicked, this, &SettingsPanel::decrementTimerLimit);
+    curY += rowHeight;
 
-    // timer Limit setting
-    int timerLimitIncBtnW = ((settingsPanelW/2) - (btnPadding*2))/2;
-    int timerLimitIncBtnX = btnX;
-    int timerLimitIncBtnY = timerLimitSetting->y();
-    Button* timerLimitIncBtn = new Button(QString("+"), Qt::green,20, timerLimitIncBtnW, btnHeight, 0, 0, this);
-    timerLimitIncBtn->setPos(btnX, timerLimitIncBtnY);
-    connect(timerLimitIncBtn,SIGNAL(clicked()),this,SLOT(incrementTimerLimit()));
+    // --- Vehicle Details ---
+    vehicleDetailsLabel = createSettingLabel("Vehicle Details: Off", contentX, curY);
+    Button* vdBtn = createToggleButton("Off", rightColX, curY, toggleBtnW, rowHeight - 4, false);
+    connect(vdBtn, &Button::clicked, this, &SettingsPanel::toggleVehicleDetails);
+    curY += rowHeight + 15;
 
-    int timerLimitDecBtnW = timerLimitIncBtnW;
-    int timerLimitDecBtnX = timerLimitIncBtnX + timerLimitIncBtnW;
-    int timerLimitDecBtnY = timerLimitIncBtnY;
-    Button* timerLimitDecBtn = new Button(QString("-"), Qt::red,20, timerLimitDecBtnW, btnHeight, 0, 0, this);
-    timerLimitDecBtn->setPos(timerLimitDecBtnX, timerLimitDecBtnY);
-    connect(timerLimitDecBtn,SIGNAL(clicked()),this,SLOT(decrementTimerLimit()));
+    // ========== Restart Button ==========
+    int restartBtnW = panelW / 2;
+    int restartBtnX = panelX + (panelW - restartBtnW) / 2;
+    Button* restartBtn = new Button("Restart Simulation", Colors::accentOrange(), 14,
+                                     restartBtnW, 40, 0, 0, this);
+    restartBtn->setPos(restartBtnX, curY);
+    connect(restartBtn, &Button::clicked, this, &SettingsPanel::restart);
 
-    // Apply Changes Button
-    int restartBtnW = settingsPanelW - (settingsPanelW/2);
-    int restartBtnX = settingsPanelX + (settingsPanelW/4);
-    int restartBtnY = settingsPanelY + settingsPanelH - btnHeight - btnPadding;
-    Button* restartBtn = new Button(QString("Restart"), Qt::yellow, 20,restartBtnW, btnHeight, 0, 0, this);
-    restartBtn->setPos(restartBtnX, restartBtnY);
-    connect(restartBtn,SIGNAL(clicked()),this,SLOT(restart()));
-
-    // TrafficLights Toggle
-    int trafficLightsBtnW = (settingsPanelW/2) - (btnPadding*2);
-    int trafficLightsBtnY = trafficLightsSetting->y();
-    Button* trafficLightsBtn = new Button(QString("O/I"), Qt::green, 20, trafficLightsBtnW, btnHeight, 0, 0, this);
-    trafficLightsBtn->setPos(btnX, trafficLightsBtnY);
-    connect(trafficLightsBtn,SIGNAL(clicked()),this,SLOT(toggleTrafficLights()));
-
-    this->setVisible(false);
+    setVisible(false);
 }
 
-void SettingsPanel::toggle(){
+// --- Helper: create section header ---
+QGraphicsTextItem* SettingsPanel::createSectionHeader(const QString& text, int x, int y)
+{
+    QFont headerFont("Segoe UI", 14);
+    headerFont.setWeight(QFont::Bold);
+    QGraphicsTextItem* header = new QGraphicsTextItem(text, this);
+    header->setPos(x, y);
+    header->setFont(headerFont);
+    header->setDefaultTextColor(Colors::accentBlue());
+
+    // Divider line under header
+    QGraphicsRectItem* divider = new QGraphicsRectItem(
+        x, y + 26, panelW - 2 * kBtnPadding, 1, this);
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(QColor(255, 255, 255, 40));
+    divider->setBrush(brush);
+    divider->setPen(Qt::NoPen);
+
+    return header;
+}
+
+// --- Helper: create setting label ---
+QGraphicsTextItem* SettingsPanel::createSettingLabel(const QString& text, int x, int y)
+{
+    QFont settingFont("Segoe UI", 13);
+    QGraphicsTextItem* label = new QGraphicsTextItem(text, this);
+    label->setPos(x, y + 4);
+    label->setFont(settingFont);
+    label->setDefaultTextColor(Colors::textPrimary());
+    return label;
+}
+
+// --- Helper: create toggle button ---
+Button* SettingsPanel::createToggleButton(const QString& label, int x, int y, int w, int h, bool initialState)
+{
+    Button* btn = new Button(label, Colors::btnDefault(), 12, w, h, 0, 0, this);
+    btn->setToggleMode(true);
+    btn->setPos(x, y);
+    if (initialState)
+        btn->setToggled(true);
+    return btn;
+}
+
+// --- Slots ---
+
+void SettingsPanel::toggle()
+{
     setVisible(!isVisible());
 }
 
-void SettingsPanel::restart(){
-    simulation->resetTimer();
-    simulation->statisticsPanel->reset();
-    simulation->destroyAllVehicles();
-    if(simulation->isStarted) simulation->startToggle();
+void SettingsPanel::restart()
+{
+    emit restartRequested();
     toggle();
 }
 
-void SettingsPanel::toggleAlgorithm(){
-    algorithmEnabled = !algorithmEnabled;
-    if(algorithmEnabled) simulation->algorithm->run();
-    algorithmSetting->setPlainText(QString("Algorithm: ") + QString(algorithmEnabled ? "On" : "Off"));
+void SettingsPanel::toggleAlgorithm()
+{
+    algorithmEnabled = algorithmBtn->isToggled();
+    algorithmLabel->setPlainText(QString("Anti-collision AI: ") + (algorithmEnabled ? "On" : "Off"));
+    algorithmBtn->setText(algorithmEnabled ? "On" : "Off");
+    emit algorithmToggled(algorithmEnabled);
 }
 
-void SettingsPanel::toggleTrafficLights(){
-    trafficLightsEnabled = !trafficLightsEnabled;
-    trafficLightsSetting->setPlainText(QString("Traffic Lights: ") + QString(trafficLightsEnabled ? "On" : "Off"));
+void SettingsPanel::toggleTrafficLights()
+{
+    trafficLightsEnabled = trafficLightsBtn->isToggled();
+    trafficLightsLabel->setPlainText(QString("Traffic Lights: ") + (trafficLightsEnabled ? "On" : "Off"));
+    trafficLightsBtn->setText(trafficLightsEnabled ? "On" : "Off");
 }
 
-void SettingsPanel::toggleVehicleDetails(){
+void SettingsPanel::toggleStopSign()
+{
+    stopSignEnabled = stopSignBtn->isToggled();
+    stopSignLabel->setPlainText(QString("Stop Signs: ") + (stopSignEnabled ? "On" : "Off"));
+    stopSignBtn->setText(stopSignEnabled ? "On" : "Off");
+}
+
+void SettingsPanel::toggleSpeedBump()
+{
+    speedBumpEnabled = speedBumpBtn->isToggled();
+    speedBumpLabel->setPlainText(QString("Speed Bumps: ") + (speedBumpEnabled ? "On" : "Off"));
+    speedBumpBtn->setText(speedBumpEnabled ? "On" : "Off");
+}
+
+void SettingsPanel::toggleYield()
+{
+    yieldEnabled = yieldBtn->isToggled();
+    yieldLabel->setPlainText(QString("Yield Signs: ") + (yieldEnabled ? "On" : "Off"));
+    yieldBtn->setText(yieldEnabled ? "On" : "Off");
+}
+
+void SettingsPanel::toggleSpeedLimit()
+{
+    speedLimitEnabled = speedLimitBtn->isToggled();
+    speedLimitLabel->setPlainText(QString("Speed Limit Zone: ") + (speedLimitEnabled ? "On" : "Off"));
+    speedLimitBtn->setText(speedLimitEnabled ? "On" : "Off");
+}
+
+void SettingsPanel::toggleVehicleDetails()
+{
     vehicleDetailsEnabled = !vehicleDetailsEnabled;
-    vehicleDetailsSetting->setPlainText(QString("Vehicle Details: ") + QString(vehicleDetailsEnabled ? "On" : "Off"));
+    vehicleDetailsLabel->setPlainText(
+        QString("Vehicle Details: ") + (vehicleDetailsEnabled ? "On" : "Off"));
 }
 
-void SettingsPanel::incrementVehiclesPerSec(){
+void SettingsPanel::incrementVehiclesPerSec()
+{
     vehiclesPerSec++;
-    vehiclesPerSecSetting->setPlainText(QString("Cars Per Second: ") + QString::number(vehiclesPerSec));
+    vehiclesPerSecLabel->setPlainText("Cars/Second: " + QString::number(vehiclesPerSec));
 }
 
-void SettingsPanel::decrementVehiclesPerSec(){
-    if(vehiclesPerSec == 0) return;
+void SettingsPanel::decrementVehiclesPerSec()
+{
+    if (vehiclesPerSec == 0) return;
     vehiclesPerSec--;
-    vehiclesPerSecSetting->setPlainText(QString("Cars Per Second: ") + QString::number(vehiclesPerSec));
+    vehiclesPerSecLabel->setPlainText("Cars/Second: " + QString::number(vehiclesPerSec));
 }
 
-void SettingsPanel::incrementTimerLimit(){
+void SettingsPanel::incrementTimerLimit()
+{
     timerLimit++;
-    timerLimitSetting->setPlainText(QString("Timer Limit: ") + QString::number(timerLimit) + " mins");
+    timerLimitLabel->setPlainText("Timer Limit: " + QString::number(timerLimit) + " min");
 }
 
-void SettingsPanel::decrementTimerLimit(){
-    if(timerLimit == 1) return;
+void SettingsPanel::decrementTimerLimit()
+{
+    if (timerLimit == 1) return;
     timerLimit--;
-    timerLimitSetting->setPlainText(QString("Timer Limit: ") + QString::number(timerLimit) + " mins");
+    timerLimitLabel->setPlainText("Timer Limit: " + QString::number(timerLimit) + " min");
 }
 
-void SettingsPanel::incrementSpeedRangeLowerBound(){
-    // Can go higher than Upper bound
-    if(speedRangeUpperBound >= speedRangeLowerBound+1){
+void SettingsPanel::incrementSpeedRangeLowerBound()
+{
+    if (speedRangeUpperBound >= speedRangeLowerBound + 1) {
         speedRangeLowerBound++;
-        speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        updateSpeedDisplay();
     }
 }
 
-void SettingsPanel::decrementSpeedRangeLowerBound(){
-    if(speedRangeLowerBound == 0) return;
+void SettingsPanel::decrementSpeedRangeLowerBound()
+{
+    if (speedRangeLowerBound == 0) return;
     speedRangeLowerBound--;
-    speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    updateSpeedDisplay();
 }
 
-void SettingsPanel::incrementSpeedRangeUpperBound(){
+void SettingsPanel::incrementSpeedRangeUpperBound()
+{
     speedRangeUpperBound++;
-    speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+    updateSpeedDisplay();
 }
 
-void SettingsPanel::decrementSpeedRangeUpperBound(){
-    // Cant go lower than lower bound
-    if(speedRangeLowerBound <= speedRangeUpperBound-1){
+void SettingsPanel::decrementSpeedRangeUpperBound()
+{
+    if (speedRangeLowerBound <= speedRangeUpperBound - 1) {
         speedRangeUpperBound--;
-        speedRangeSetting->setPlainText(QString("Speed: ") + QString::number(speedRangeLowerBound) + QString(" to ") + QString::number(speedRangeUpperBound));
+        updateSpeedDisplay();
     }
+}
+
+void SettingsPanel::updateSpeedDisplay()
+{
+    speedRangeLabel->setPlainText(
+        "Speed: " + QString::number(speedRangeLowerBound)
+        + " - " + QString::number(speedRangeUpperBound));
 }

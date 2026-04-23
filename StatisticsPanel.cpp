@@ -1,92 +1,157 @@
 #include "StatisticsPanel.h"
-#include "Simulation.h"
+#include "Constants.h"
+#include <QGraphicsTextItem>
+#include <QBrush>
+#include <QPen>
+#include <QFont>
 
-extern Simulation * simulation;
-
-StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPadding, QGraphicsItem *parent): QObject(), QGraphicsRectItem(parent){
+StatisticsPanel::StatisticsPanel(int screenWidth, int screenHeight, int btnPadding,
+                                 QGraphicsItem* parent)
+    : QObject()
+    , QGraphicsRectItem(parent)
+{
     collisions = 0;
-    collisionsAvoided=0;
-    carsOnScreen =0;
-    totalCarsSpawned=0;
+    collisionsAvoided = 0;
+    carsOnScreen = 0;
+    totalCarsSpawned = 0;
+    stopSignStops = 0;
+    yieldEvents = 0;
 
-    // this panel
-    QFont f;
-    f.setPointSize(16);
+    int panelX = 190;
+    int panelY = screenHeight - (screenHeight / 4) + 8;
+    int panelW = screenWidth - 200;
+    int panelH = screenHeight / 4 - 16;
+    setRect(panelX, panelY, panelW, panelH);
 
-    // this panel
-    int statisticsPanelX = 200;
-    int statisticsPanelY = screenHeight - (screenHeight/4) +10;
-    int statisticsPanelW = screenWidth - 220;
-    int statisticsPanelH = (screenHeight)/3 -80;
-    setRect(statisticsPanelX,statisticsPanelY,statisticsPanelW,statisticsPanelH);
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
-    brush.setColor(Qt::lightGray);
+    brush.setColor(Colors::panelMedium());
     setBrush(brush);
-    setOpacity(0.7);
+    QPen pen(QColor(255, 255, 255, 20));
+    pen.setWidth(1);
+    setPen(pen);
+    setOpacity(0.95);
     setZValue(2);
 
-    int statisticsTextSize = 5;
-    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionPercentageDisplay, &collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collision Percentage: ", "Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
-    QString statisticsValues[statisticsTextSize] = {"0%", QString::number(collisions), QString::number(collisionsAvoided), QString::number(carsOnScreen), QString::number(totalCarsSpawned)};
+    // Header
+    QFont headerFont("Segoe UI", 12);
+    headerFont.setWeight(QFont::Bold);
+    QGraphicsTextItem* header = new QGraphicsTextItem("Live Statistics", this);
+    header->setPos(panelX + btnPadding, panelY + 2);
+    header->setFont(headerFont);
+    header->setDefaultTextColor(Colors::accentTeal());
 
+    QFont f("Segoe UI", 11);
+    int startY = panelY + 24;
+    int lineH = 22;
+    int leftX = panelX + btnPadding;
+    int rightX = panelX + panelW / 2 + btnPadding;
 
-    for(int i=0; i<statisticsTextSize; i++){
-        *statisticsTextsItems[i] = new QGraphicsTextItem(QString(statisticsTexts[i]) + (statisticsValues[i]), this);
-        (*statisticsTextsItems[i])->setPos(statisticsPanelX +btnPadding, statisticsPanelY + (i*statisticsPanelH/statisticsTextSize) );
-        (*statisticsTextsItems[i])->setFont(f);
-        (*statisticsTextsItems[i])->setDefaultTextColor(Qt::white);
-    }
+    // Left column
+    collisionPercentageDisplay = new QGraphicsTextItem("Collision %: 0%", this);
+    collisionPercentageDisplay->setPos(leftX, startY);
+    collisionPercentageDisplay->setFont(f);
+    collisionPercentageDisplay->setDefaultTextColor(Colors::accentRed());
 
+    collisionsDisplay = new QGraphicsTextItem("Collisions: 0", this);
+    collisionsDisplay->setPos(leftX, startY + lineH);
+    collisionsDisplay->setFont(f);
+    collisionsDisplay->setDefaultTextColor(Colors::textPrimary());
+
+    collisionsAvoidedDisplay = new QGraphicsTextItem("Avoided: 0", this);
+    collisionsAvoidedDisplay->setPos(leftX, startY + lineH * 2);
+    collisionsAvoidedDisplay->setFont(f);
+    collisionsAvoidedDisplay->setDefaultTextColor(Colors::accentGreen());
+
+    totalCarsSpawnedDisplay = new QGraphicsTextItem("Spawned: 0", this);
+    totalCarsSpawnedDisplay->setPos(leftX, startY + lineH * 3);
+    totalCarsSpawnedDisplay->setFont(f);
+    totalCarsSpawnedDisplay->setDefaultTextColor(Colors::textPrimary());
+
+    // Right column
+    carsOnScreenDisplay = new QGraphicsTextItem("On Screen: 0", this);
+    carsOnScreenDisplay->setPos(rightX, startY);
+    carsOnScreenDisplay->setFont(f);
+    carsOnScreenDisplay->setDefaultTextColor(Colors::textPrimary());
+
+    stopSignDisplay = new QGraphicsTextItem("Stop Sign Stops: 0", this);
+    stopSignDisplay->setPos(rightX, startY + lineH);
+    stopSignDisplay->setFont(f);
+    stopSignDisplay->setDefaultTextColor(Colors::accentYellow());
+
+    yieldDisplay = new QGraphicsTextItem("Yield Events: 0", this);
+    yieldDisplay->setPos(rightX, startY + lineH * 2);
+    yieldDisplay->setFont(f);
+    yieldDisplay->setDefaultTextColor(Colors::accentOrange());
 }
 
-void StatisticsPanel::reset(){
+void StatisticsPanel::reset()
+{
     collisions = 0;
-    collisionsAvoided=0;
-    carsOnScreen =0;
-    totalCarsSpawned=0;
+    collisionsAvoided = 0;
+    carsOnScreen = 0;
+    totalCarsSpawned = 0;
+    stopSignStops = 0;
+    yieldEvents = 0;
 
-    int statisticsTextSize = 5;
-    QGraphicsTextItem** statisticsTextsItems[statisticsTextSize] = {&collisionPercentageDisplay, &collisionsDisplay, &collisionsAvoidedDisplay, &totalCarsSpawnedDisplay, &carsOnScreenDisplay};
-    QString statisticsTexts[statisticsTextSize] = {"Collision Percentage:", "Collisions: ", "Collisions Avoided: ", "Total Cars Spawned: ", "Cars On Screen: "};
-    QString statisticsValues[statisticsTextSize] = {"0%", "0", "0", "0", "0"};
-
-    for(int i=0; i<statisticsTextSize; i++){
-        (*statisticsTextsItems[i])->setPlainText(QString(statisticsTexts[i]) + statisticsValues[i]);
-    }
-
+    collisionPercentageDisplay->setPlainText("Collision %: 0%");
+    collisionsDisplay->setPlainText("Collisions: 0");
+    collisionsAvoidedDisplay->setPlainText("Avoided: 0");
+    totalCarsSpawnedDisplay->setPlainText("Spawned: 0");
+    carsOnScreenDisplay->setPlainText("On Screen: 0");
+    stopSignDisplay->setPlainText("Stop Sign Stops: 0");
+    yieldDisplay->setPlainText("Yield Events: 0");
 }
 
-void StatisticsPanel::updateCollisionPercentage(){
-    int collisionPercentage = (((float)collisions/((float)totalCarsSpawned))*100);
-    collisionPercentageDisplay->setPlainText(QString("Collision Percentage: ") + QString::number(collisionPercentage) + "%");
+void StatisticsPanel::updateCollisionPercentage()
+{
+    if (totalCarsSpawned == 0) return;
+    int percentage = static_cast<int>((static_cast<float>(collisions) / totalCarsSpawned) * 100);
+    collisionPercentageDisplay->setPlainText(
+        "Collision %: " + QString::number(percentage) + "%");
 }
 
-void StatisticsPanel::incrementCollisionsAvoided(){
+void StatisticsPanel::incrementCollisionsAvoided()
+{
     collisionsAvoided++;
-    collisionsAvoidedDisplay->setPlainText(QString("Collisions Avoided: ") + QString::number(collisionsAvoided));
+    collisionsAvoidedDisplay->setPlainText("Avoided: " + QString::number(collisionsAvoided));
 }
 
-void StatisticsPanel::incrementCollisions(){
+void StatisticsPanel::incrementCollisions()
+{
     collisions++;
-    collisionsDisplay->setPlainText(QString("Collisions: ") + QString::number(collisions));
+    collisionsDisplay->setPlainText("Collisions: " + QString::number(collisions));
     updateCollisionPercentage();
 }
 
-void StatisticsPanel::incrementTotalCarsSpawned(){
+void StatisticsPanel::incrementTotalCarsSpawned()
+{
     totalCarsSpawned++;
-    totalCarsSpawnedDisplay->setPlainText(QString("Total Cars Spawned: ") + QString::number(totalCarsSpawned));
+    totalCarsSpawnedDisplay->setPlainText("Spawned: " + QString::number(totalCarsSpawned));
     updateCollisionPercentage();
 }
 
-void StatisticsPanel::incrementCarsOnScreen(){
+void StatisticsPanel::incrementCarsOnScreen()
+{
     carsOnScreen++;
-    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
+    carsOnScreenDisplay->setPlainText("On Screen: " + QString::number(carsOnScreen));
 }
 
-void StatisticsPanel::decrementCarsOnScreen(){
-    if(carsOnScreen == 0) return;
+void StatisticsPanel::decrementCarsOnScreen()
+{
+    if (carsOnScreen == 0) return;
     carsOnScreen--;
-    carsOnScreenDisplay->setPlainText(QString("Cars On Screen: ") + QString::number(carsOnScreen));
+    carsOnScreenDisplay->setPlainText("On Screen: " + QString::number(carsOnScreen));
+}
+
+void StatisticsPanel::incrementStopSignStops()
+{
+    stopSignStops++;
+    stopSignDisplay->setPlainText("Stop Sign Stops: " + QString::number(stopSignStops));
+}
+
+void StatisticsPanel::incrementYieldEvents()
+{
+    yieldEvents++;
+    yieldDisplay->setPlainText("Yield Events: " + QString::number(yieldEvents));
 }

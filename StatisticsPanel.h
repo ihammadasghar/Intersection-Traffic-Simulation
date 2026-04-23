@@ -2,29 +2,42 @@
 #define STATISTICSPANEL_H
 
 #include <QObject>
-#include <QGraphicsItem>
+#include <QGraphicsRectItem>
 
-class StatisticsPanel: public QObject,public QGraphicsRectItem{
+class QGraphicsTextItem;
+
+class StatisticsPanel : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
-    StatisticsPanel(int screenWidth, int screenHeight, int btnPadding, QGraphicsItem * parent=NULL);
+    StatisticsPanel(int screenWidth, int screenHeight, int btnPadding,
+                    QGraphicsItem* parent = nullptr);
+
     int collisions;
     int collisionsAvoided;
     int totalCarsSpawned;
     int carsOnScreen;
-    QGraphicsTextItem* collisionsDisplay;
-    QGraphicsTextItem* collisionsAvoidedDisplay;
-    QGraphicsTextItem* totalCarsSpawnedDisplay;
-    QGraphicsTextItem* carsOnScreenDisplay;
-    QGraphicsTextItem* collisionPercentageDisplay;
+    int stopSignStops;
+    int yieldEvents;
+
     void reset();
-    void updateCollisionPercentage();
     void incrementCollisions();
     void incrementCollisionsAvoided();
     void incrementTotalCarsSpawned();
     void incrementCarsOnScreen();
     void decrementCarsOnScreen();
+    void incrementStopSignStops();
+    void incrementYieldEvents();
 
+private:
+    void updateCollisionPercentage();
+
+    QGraphicsTextItem* collisionPercentageDisplay;
+    QGraphicsTextItem* collisionsDisplay;
+    QGraphicsTextItem* collisionsAvoidedDisplay;
+    QGraphicsTextItem* totalCarsSpawnedDisplay;
+    QGraphicsTextItem* carsOnScreenDisplay;
+    QGraphicsTextItem* stopSignDisplay;
+    QGraphicsTextItem* yieldDisplay;
 };
 
 #endif // STATISTICSPANEL_H

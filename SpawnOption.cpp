@@ -1,9 +1,11 @@
 #include "SpawnOption.h"
 
-SpawnOption::SpawnOption(int initialX, int initialY, int initialRotation, QString initialDirection, QString turnDirection){
-    this->initialX = initialX;
-    this->initialY = initialY;
-    this->initialRotation = initialRotation;
-    this->initialDirection = initialDirection;
-    this->turnDirection = turnDirection;
+SpawnOption::SpawnOption(int initialX, int initialY, int initialRotation,
+                         Direction initialDirection, TurnDirection turnDirection)
+    : initialX(initialX)
+    , initialY(initialY)
+    , initialRotation(initialRotation)
+    , initialDirection(initialDirection)
+    , turnDirection(turnDirection)
+{
 }

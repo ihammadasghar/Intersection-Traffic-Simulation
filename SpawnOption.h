@@ -1,16 +1,18 @@
 #ifndef SPAWNOPTION_H
 #define SPAWNOPTION_H
 
-#include <QString>
+#include "Direction.h"
 
-class SpawnOption{
+class SpawnOption {
 public:
-    SpawnOption(int initialX, int initialY, int initialRotation, QString initialDirection, QString turnDirection);
+    SpawnOption(int initialX, int initialY, int initialRotation,
+                Direction initialDirection, TurnDirection turnDirection);
+
     int initialX;
     int initialY;
     int initialRotation;
-    QString initialDirection;
-    QString turnDirection;
+    Direction initialDirection;
+    TurnDirection turnDirection;
 };
 
 #endif // SPAWNOPTION_H

@@ -1,34 +1,34 @@
 #ifndef RESULTS_H
 #define RESULTS_H
 
-#include <QGraphicsPixmapItem>
 #include <QObject>
-#include <QGraphicsItem>
-#include <QGraphicsTextItem>
+#include <QGraphicsRectItem>
+#include <QList>
+#include <QString>
 
-class Results: public QObject,public QGraphicsRectItem{
+class QGraphicsTextItem;
+
+class Results : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
-    Results(int screenWidth, int screenHeight, int btnPadding, QGraphicsItem * parent=NULL);
-    QList<QList<QString>> recordsList;
-    QGraphicsTextItem* numberColDisplay;
-    QGraphicsTextItem* collisionsColDisplay;
-    QGraphicsTextItem* algorithmColDisplay;
-    QGraphicsTextItem* carsColDisplay;
-    QGraphicsTextItem* cpsColDisplay;
-    QGraphicsTextItem* speedColDisplay;
-    QGraphicsTextItem* percentageColDisplay;
-    int panelPadding;
-    int ResultsX;
-    int ResultsY;
+    Results(int screenWidth, int screenHeight, int btnPadding,
+            QGraphicsItem* parent = nullptr);
 
+    void addRecord(int collisions, int totalCarsSpawned, int vehiclesPerSec,
+                   int speedLower, int speedUpper, const QString& activeStrategies);
 
 public slots:
     void toggleResults();
-    void addRecord();
+
+private:
+    static constexpr int kColumnCount = 7;
+
     void drawRecords();
 
+    QList<QList<QString>> recordsList;
+    QGraphicsTextItem* columnDisplays[kColumnCount];
+    QString columnNames[kColumnCount];
+    int panelPadding;
 };
 
 #endif // RESULTS_H
-
